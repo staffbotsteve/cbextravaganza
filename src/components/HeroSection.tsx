@@ -8,7 +8,7 @@ import CountdownTimer from "./CountdownTimer";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const donationAmounts = [10, 20, 50, 100];
+const donationAmounts = [5, 20, 50, 100];
 
 const HeroSection = () => {
   const [loading, setLoading] = useState<number | null>(null);
