@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Layers,
+  Ticket,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -21,6 +22,7 @@ const sidebarItems = [
   { label: "Sponsors", path: "/admin/sponsors", icon: HandHeart },
   { label: "Sponsorship Levels", path: "/admin/sponsorship-levels", icon: Layers },
   { label: "Vendors", path: "/admin/vendors", icon: Store },
+  { label: "Tickets", path: "/admin/tickets", icon: Ticket },
   { label: "Guests", path: "/admin/guests", icon: Users },
   { label: "Admins", path: "/admin/users", icon: ShieldCheck },
 ];
