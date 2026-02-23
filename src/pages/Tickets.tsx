@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import DonationBanner from "@/components/DonationBanner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Check } from "lucide-react";
@@ -81,6 +82,7 @@ const Tickets = () => {
           </div>
         </div>
       </main>
+      <DonationBanner />
       <Footer />
     </div>
   );

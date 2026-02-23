@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import DonationBanner from "@/components/DonationBanner";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HandHeart, Store, Users, DollarSign } from "lucide-react";
@@ -62,6 +63,7 @@ const GetInvolved = () => {
           </div>
         </div>
       </main>
+      <DonationBanner />
       <Footer />
     </div>
   );
