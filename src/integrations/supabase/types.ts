@@ -101,6 +101,51 @@ export type Database = {
         }
         Relationships: []
       }
+      sponsorship_levels: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          parking_included: number
+          remaining_available: number
+          sort_order: number
+          tickets_included: number
+          total_available: number
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          parking_included?: number
+          remaining_available?: number
+          sort_order?: number
+          tickets_included?: number
+          total_available?: number
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          parking_included?: number
+          remaining_available?: number
+          sort_order?: number
+          tickets_included?: number
+          total_available?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

@@ -12,12 +12,14 @@ import {
   ShieldCheck,
   Menu,
   X,
+  Layers,
 } from "lucide-react";
 import { useState } from "react";
 
 const sidebarItems = [
   { label: "Overview", path: "/admin", icon: LayoutDashboard },
   { label: "Sponsors", path: "/admin/sponsors", icon: HandHeart },
+  { label: "Sponsorship Levels", path: "/admin/sponsorship-levels", icon: Layers },
   { label: "Vendors", path: "/admin/vendors", icon: Store },
   { label: "Guests", path: "/admin/guests", icon: Users },
   { label: "Admins", path: "/admin/users", icon: ShieldCheck },

@@ -10,6 +10,7 @@ import Tickets from "./pages/Tickets";
 import MapPage from "./pages/MapPage";
 import Vendors from "./pages/Vendors";
 import Sponsors from "./pages/Sponsors";
+import SponsorApply from "./pages/SponsorApply";
 import GetInvolved from "./pages/GetInvolved";
 import VendorApply from "./pages/VendorApply";
 import Contact from "./pages/Contact";
@@ -20,6 +21,7 @@ import AdminSponsors from "./pages/admin/AdminSponsors";
 import AdminVendors from "./pages/admin/AdminVendors";
 import AdminGuests from "./pages/admin/AdminGuests";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminSponsorshipLevels from "./pages/admin/AdminSponsorshipLevels";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +41,7 @@ const App = () => (
             <Route path="/vendors" element={<Vendors />} />
             <Route path="/vendors/apply" element={<VendorApply />} />
             <Route path="/sponsors" element={<Sponsors />} />
+            <Route path="/sponsors/apply" element={<SponsorApply />} />
             <Route path="/get-involved" element={<GetInvolved />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -48,6 +51,7 @@ const App = () => (
               <Route path="vendors" element={<AdminVendors />} />
               <Route path="guests" element={<AdminGuests />} />
               <Route path="users" element={<AdminUsers />} />
+              <Route path="sponsorship-levels" element={<AdminSponsorshipLevels />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
