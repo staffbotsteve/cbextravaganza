@@ -43,7 +43,7 @@ const Tickets = () => {
               Get Your Tickets
             </h1>
             <p className="font-body text-muted-foreground text-lg max-w-xl mx-auto">
-              Choose your experience for the 36th Annual CB Extravaganza
+              Choose your experience for the 37th Annual CB Extravaganza
             </p>
           </div>
 
