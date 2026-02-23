@@ -2,26 +2,29 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
-const sponsorTiers = [
-  {
-    tier: "Presenting Sponsor",
-    sponsors: ["CAPTRUST"],
-    color: "text-accent",
-  },
-  {
-    tier: "Gold Sponsors",
-    sponsors: ["Sponsor A", "Sponsor B", "Sponsor C"],
-    color: "text-primary",
-  },
-  {
-    tier: "Silver Sponsors",
-    sponsors: ["Sponsor D", "Sponsor E", "Sponsor F", "Sponsor G"],
-    color: "text-muted-foreground",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Sponsors = () => {
+  const { data: sponsors, isLoading } = useQuery({
+    queryKey: ["sponsors"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("sponsors")
+        .select("*")
+        .order("value", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const tierOrder = ["Presenting", "Venue", "Cigar & Whiskey Lounge", "Wine Glass", "Platinum", "Falcon", "Silver", "In-Kind"];
+
+  const groupedSponsors = tierOrder.map((tier) => ({
+    tier,
+    sponsors: sponsors?.filter((s) => s.sponsorship_level === tier) ?? [],
+  })).filter((g) => g.sponsors.length > 0);
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -34,23 +37,30 @@ const Sponsors = () => {
             </p>
           </div>
 
-          <div className="max-w-3xl mx-auto space-y-10 mb-12">
-            {sponsorTiers.map((t) => (
-              <div key={t.tier} className="text-center">
-                <h3 className={`font-display font-bold text-2xl mb-4 ${t.color}`}>{t.tier}</h3>
-                <div className="flex flex-wrap justify-center gap-4">
-                  {t.sponsors.map((s) => (
-                    <span
-                      key={s}
-                      className="bg-card border border-border rounded-xl px-8 py-4 font-display font-bold text-lg text-foreground"
-                    >
-                      {s}
-                    </span>
-                  ))}
+          {isLoading ? (
+            <p className="text-center font-body text-muted-foreground">Loading sponsors...</p>
+          ) : (
+            <div className="max-w-4xl mx-auto space-y-10 mb-12">
+              {groupedSponsors.map((g) => (
+                <div key={g.tier} className="text-center">
+                  <h3 className={`font-display font-bold text-2xl mb-4 ${g.tier === "Presenting" ? "text-accent" : g.tier === "Venue" || g.tier === "Cigar & Whiskey Lounge" ? "text-primary" : "text-muted-foreground"}`}>
+                    {g.tier === "Venue" || g.tier === "Cigar & Whiskey Lounge" ? "Venue Sponsors" : g.tier === "Wine Glass" ? "Wine Glass Sponsors" : `${g.tier} Sponsors`}
+                  </h3>
+                  <div className="flex flex-wrap justify-center gap-3">
+                    {g.sponsors.map((s) => (
+                      <span
+                        key={s.id}
+                        className="bg-card border border-border rounded-xl px-6 py-3 font-body font-semibold text-foreground text-sm"
+                        title={s.sponsorship_label || undefined}
+                      >
+                        {s.company_name}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <div className="text-center">
             <p className="font-body text-muted-foreground mb-4">Interested in sponsoring?</p>
