@@ -92,39 +92,50 @@ const VendorApply = () => {
 
   const onSubmit = async (values: VendorFormData) => {
     setSubmitting(true);
-    const { error } = await supabase.from("vendors").insert({
-      company_name: values.company_name,
-      vendor_type: values.vendor_type,
-      contact_name: values.contact_name,
-      email: values.email,
-      phone: values.phone,
-      address_line1: values.address_line1 || null,
-      address_line2: values.address_line2 || null,
-      city: values.city || null,
-      state: values.state || null,
-      zip: values.zip || null,
-      location_preference: values.location_preference || null,
-      needs_electricity: values.needs_electricity,
-      needs_tent: values.needs_tent,
-      volunteers_needed: values.volunteers_needed,
-      past_participation: values.past_participation || null,
-      notes: values.notes || null,
-      status: "Form Received",
-    });
+    try {
+      const { error } = await supabase.from("vendors").insert({
+        company_name: values.company_name,
+        vendor_type: values.vendor_type,
+        contact_name: values.contact_name,
+        email: values.email,
+        phone: values.phone,
+        address_line1: values.address_line1 || null,
+        address_line2: values.address_line2 || null,
+        city: values.city || null,
+        state: values.state || null,
+        zip: values.zip || null,
+        location_preference: values.location_preference || null,
+        needs_electricity: values.needs_electricity,
+        needs_tent: values.needs_tent,
+        volunteers_needed: values.volunteers_needed,
+        past_participation: values.past_participation || null,
+        notes: values.notes || null,
+        status: "Form Received",
+      });
 
-    setSubmitting(false);
+      setSubmitting(false);
 
-    if (error) {
+      if (error) {
+        console.error("Vendor insert error:", error);
+        toast({
+          title: "Submission failed",
+          description: error.message || "Something went wrong. Please try again or contact us directly.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({ title: "Application received!", description: "Thank you — we'll be in touch soon." });
+      navigate("/vendors");
+    } catch (err) {
+      console.error("Vendor submit exception:", err);
+      setSubmitting(false);
       toast({
         title: "Submission failed",
         description: "Something went wrong. Please try again or contact us directly.",
         variant: "destructive",
       });
-      return;
     }
-
-    toast({ title: "Application received!", description: "Thank you — we'll be in touch soon." });
-    navigate("/vendors");
   };
 
   return (
