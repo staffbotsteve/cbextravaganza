@@ -2,3 +2,6 @@ project_id = "xhmiacnmuyucmmdfktsg"
 
 [functions.create-donation-checkout]
 verify_jwt = false
+
+[functions.send-vendor-confirmation]
+verify_jwt = false
