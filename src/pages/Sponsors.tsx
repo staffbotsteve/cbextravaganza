@@ -66,13 +66,12 @@ const Sponsors = () => {
 
           <div className="text-center">
             <p className="font-body text-muted-foreground mb-4">Interested in sponsoring?</p>
-            <Link to="/get-involved">
+            <Link to="/sponsors/apply">
               <Button className="rounded-full font-body font-bold">Become a Sponsor</Button>
             </Link>
           </div>
         </div>
       </main>
-      <Footer />
       <Footer />
     </div>
   );
