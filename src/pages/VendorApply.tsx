@@ -145,7 +145,20 @@ const VendorApply = () => {
         return;
       }
 
-      toast({ title: "Application received!", description: "Thank you — we'll be in touch soon." });
+      // Send confirmation email (fire-and-forget, don't block the user)
+      supabase.functions.invoke("send-vendor-confirmation", {
+        body: {
+          vendor_email: values.email,
+          vendor_name: values.contact_name,
+          company_name: values.company_name,
+          is_update: !!existing?.id,
+        },
+      }).catch((emailErr) => console.error("Email send error:", emailErr));
+
+      const message = existing?.id
+        ? "Welcome back! Your vendor information has been updated."
+        : "Thank you — we'll be in touch soon.";
+      toast({ title: "Application received!", description: message });
       navigate("/vendors");
     } catch (err) {
       console.error("Vendor submit exception:", err);
