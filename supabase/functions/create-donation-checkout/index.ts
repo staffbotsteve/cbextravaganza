@@ -7,13 +7,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PRICE_IDS: Record<string, string> = {
-  "1": "price_1T45QIDpYIyW3XDRcc515prL",
-  "5": "price_1T45QaDpYIyW3XDRDgD9GDy0",
-  "20": "price_1T45QxDpYIyW3XDRKuvt9IIV",
-  "100": "price_1T45RADpYIyW3XDRNZLgegyl",
-};
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -21,8 +14,10 @@ serve(async (req) => {
 
   try {
     const { amount } = await req.json();
-    const priceId = PRICE_IDS[String(amount)];
-    if (!priceId) throw new Error("Invalid donation amount");
+    const numAmount = Number(amount);
+    if (!numAmount || numAmount < 1 || numAmount > 10000) {
+      throw new Error("Invalid donation amount");
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
@@ -31,7 +26,20 @@ serve(async (req) => {
     const origin = req.headers.get("origin") || "http://localhost:5173";
 
     const session = await stripe.checkout.sessions.create({
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: `CB Extravaganza Donation - $${numAmount}/mo`,
+              description: "Monthly donation to the CBHS Tuition Assistance Fund",
+            },
+            unit_amount: numAmount * 100,
+            recurring: { interval: "month" },
+          },
+          quantity: 1,
+        },
+      ],
       mode: "subscription",
       success_url: `${origin}/donation-success`,
       cancel_url: `${origin}/`,
