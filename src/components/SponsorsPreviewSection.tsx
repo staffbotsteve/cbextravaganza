@@ -1,0 +1,59 @@
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+
+const sponsorNames = [
+  "Westy's", "Memphis Made Brewing", "Wiseacre", "High Cotton Brewing",
+  "Ghost River Brewing", "Crosstown Brewing", "Old Dominick Distillery",
+  "Dinstuhl's", "Central BBQ", "The Majestic Grille", "Itta Bena",
+  "Flight Restaurant", "Puck Food Hall", "Aldo's Pizza Pies",
+  "Elwood's Shells", "The Second Line",
+];
+
+const SponsorsPreviewSection = () => {
+  return (
+    <section className="py-20 bg-background">
+      <div className="container mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-14"
+        >
+          <h2 className="font-display font-black text-foreground text-4xl md:text-5xl mb-3">
+            Our Vendors & Sponsors
+          </h2>
+          <p className="font-body text-muted-foreground text-lg max-w-xl mx-auto">
+            Memphis's finest wineries, breweries, restaurants, and sponsors come together for one great cause.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="flex flex-wrap justify-center gap-3 mb-10"
+        >
+          {sponsorNames.map((name) => (
+            <span
+              key={name}
+              className="bg-muted text-foreground font-body font-semibold text-sm px-4 py-2 rounded-full border border-border hover:border-primary/30 transition-colors"
+            >
+              {name}
+            </span>
+          ))}
+        </motion.div>
+
+        <div className="text-center">
+          <Link to="/sponsors">
+            <Button variant="outline" size="lg" className="rounded-full font-body font-bold">
+              View All Sponsors
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default SponsorsPreviewSection;
