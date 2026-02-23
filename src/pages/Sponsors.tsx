@@ -19,7 +19,7 @@ const Sponsors = () => {
     },
   });
 
-  const tierOrder = ["Presenting", "Venue", "Cigar & Whiskey Lounge", "Wine Glass", "Platinum", "Falcon", "Silver", "In-Kind"];
+  const tierOrder = ["Presenting", "Main Stage", "Venue", "Cigar Lounge", "Whiskey Glass", "Wine Glass", "Falcon", "In-Kind"];
 
   const groupedSponsors = tierOrder.map((tier) => ({
     tier,
@@ -46,7 +46,7 @@ const Sponsors = () => {
               {groupedSponsors.map((g) => (
                 <div key={g.tier} className="text-center">
                   <h3 className={`font-display font-bold text-2xl mb-4 ${g.tier === "Presenting" ? "text-accent" : g.tier === "Venue" || g.tier === "Cigar & Whiskey Lounge" ? "text-primary" : "text-muted-foreground"}`}>
-                    {g.tier === "Venue" || g.tier === "Cigar & Whiskey Lounge" ? "Venue Sponsors" : g.tier === "Wine Glass" ? "Wine Glass Sponsors" : `${g.tier} Sponsors`}
+                    {`${g.tier} Sponsors`}
                   </h3>
                   <div className="flex flex-wrap justify-center gap-3">
                     {g.sponsors.map((s) => (
