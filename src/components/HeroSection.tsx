@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import heroBg from "@/assets/hero-bg.jpg";
 import CountdownTimer from "./CountdownTimer";
 import TicketCard from "./TicketCard";
+import DonationCard from "./DonationCard";
 
 
 const HeroSection = () => {
@@ -106,6 +107,7 @@ const HeroSection = () => {
             className="lg:col-span-2 flex flex-col items-center lg:items-end gap-4"
           >
             <TicketCard />
+            <DonationCard />
           </motion.div>
         </div>
 
