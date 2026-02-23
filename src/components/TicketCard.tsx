@@ -27,16 +27,28 @@ const TicketCard = () => {
 
   useEffect(() => {
     const fetchInventory = async () => {
-      const { data } = await supabase
-        .from("ticket_inventory")
-        .select("ticket_type, label, price_cents, remaining_available, is_active, sort_order")
-        .eq("is_active", true)
-        .order("sort_order");
-      if (data) {
-        setInventory(data);
-        const initial: Record<string, number> = {};
-        data.forEach((i) => (initial[i.ticket_type] = 0));
-        setQuantities(initial);
+      try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+        
+        const res = await fetch(
+          `${supabaseUrl}/rest/v1/ticket_inventory?select=ticket_type,label,price_cents,remaining_available,is_active,sort_order&is_active=eq.true&order=sort_order`,
+          {
+            headers: {
+              apikey: supabaseKey,
+              Authorization: `Bearer ${supabaseKey}`,
+            },
+          }
+        );
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setInventory(data);
+          const initial: Record<string, number> = {};
+          data.forEach((i: InventoryItem) => (initial[i.ticket_type] = 0));
+          setQuantities(initial);
+        }
+      } catch (err) {
+        console.error("Ticket fetch failed:", err);
       }
     };
     fetchInventory();
