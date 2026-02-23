@@ -84,7 +84,6 @@ const Tickets = () => {
         </div>
       </main>
       <Footer />
-      <Footer />
     </div>
   );
 };
