@@ -4,7 +4,7 @@ import { Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-const donationAmounts = [5, 20, 50, 100];
+const donationAmounts = [5, 10, 20];
 
 const DonationCard = () => {
   const [loading, setLoading] = useState<number | null>(null);
@@ -54,7 +54,7 @@ const DonationCard = () => {
         className="w-full rounded-lg border border-border bg-muted/50 px-3 py-2 font-body text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary mb-2"
       />
 
-      <div className="grid grid-cols-4 gap-1.5 mb-3">
+      <div className="grid grid-cols-3 gap-1.5 mb-3">
         {donationAmounts.map((amt) => (
           <button
             key={amt}
