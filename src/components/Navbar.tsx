@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Wine, UtensilsCrossed, GlassWater } from "lucide-react";
+import { Menu, X, Wine, UtensilsCrossed, GlassWater, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +49,18 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
+          <Link
+            to="/admin/login"
+            className={cn(
+              "px-3 py-2 rounded-md text-sm font-semibold font-body transition-colors flex items-center gap-1",
+              location.pathname.startsWith("/admin")
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-muted"
+            )}
+          >
+            <Lock className="h-3.5 w-3.5" />
+            Admin
+          </Link>
         </nav>
 
         {/* Mobile toggle */}
@@ -80,6 +92,19 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
+          <Link
+            to="/admin/login"
+            onClick={() => setIsOpen(false)}
+            className={cn(
+              "block px-4 py-2.5 rounded-md font-semibold font-body transition-colors flex items-center gap-1",
+              location.pathname.startsWith("/admin")
+                ? "bg-primary text-primary-foreground"
+                : "text-foreground hover:bg-muted"
+            )}
+          >
+            <Lock className="h-3.5 w-3.5" />
+            Admin
+          </Link>
         </nav>
       )}
     </header>
