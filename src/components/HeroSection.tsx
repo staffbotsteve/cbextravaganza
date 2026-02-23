@@ -29,7 +29,7 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="font-display font-black text-primary-foreground text-5xl md:text-7xl lg:text-8xl leading-[0.9] mb-6"
+            className="font-display font-black text-primary-foreground text-3xl md:text-5xl lg:text-6xl leading-[0.9] mb-6"
           >
             CHRISTIAN
             <br />
