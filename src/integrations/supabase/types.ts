@@ -14,16 +14,201 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      sponsors: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          amount_paid: number | null
+          city: string | null
+          company_name: string
+          contact_name: string | null
+          created_at: string
+          email: string | null
+          id: string
+          in_slideshow: boolean | null
+          level_2022: string | null
+          level_2023: string | null
+          level_2024: string | null
+          notes: string | null
+          parking_qty: number | null
+          payment_status: string | null
+          phone: string | null
+          solicitor: string | null
+          sponsorship_label: string | null
+          sponsorship_level: string
+          state: string | null
+          status: string | null
+          ticket_qty: number | null
+          updated_at: string
+          value: number | null
+          zip: string | null
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          amount_paid?: number | null
+          city?: string | null
+          company_name: string
+          contact_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          in_slideshow?: boolean | null
+          level_2022?: string | null
+          level_2023?: string | null
+          level_2024?: string | null
+          notes?: string | null
+          parking_qty?: number | null
+          payment_status?: string | null
+          phone?: string | null
+          solicitor?: string | null
+          sponsorship_label?: string | null
+          sponsorship_level?: string
+          state?: string | null
+          status?: string | null
+          ticket_qty?: number | null
+          updated_at?: string
+          value?: number | null
+          zip?: string | null
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          amount_paid?: number | null
+          city?: string | null
+          company_name?: string
+          contact_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          in_slideshow?: boolean | null
+          level_2022?: string | null
+          level_2023?: string | null
+          level_2024?: string | null
+          notes?: string | null
+          parking_qty?: number | null
+          payment_status?: string | null
+          phone?: string | null
+          solicitor?: string | null
+          sponsorship_label?: string | null
+          sponsorship_level?: string
+          state?: string | null
+          status?: string | null
+          ticket_qty?: number | null
+          updated_at?: string
+          value?: number | null
+          zip?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vendors: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          company_name: string
+          contact_name: string | null
+          created_at: string
+          email: string | null
+          id: string
+          location_preference: string | null
+          needs_electricity: boolean | null
+          needs_tent: boolean | null
+          notes: string | null
+          past_participation: string | null
+          phone: string | null
+          solicited_for_auction: string | null
+          solicitor: string | null
+          state: string | null
+          status: string | null
+          updated_at: string
+          vendor_type: string
+          volunteers_needed: number | null
+          zip: string | null
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          company_name: string
+          contact_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          location_preference?: string | null
+          needs_electricity?: boolean | null
+          needs_tent?: boolean | null
+          notes?: string | null
+          past_participation?: string | null
+          phone?: string | null
+          solicited_for_auction?: string | null
+          solicitor?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          vendor_type: string
+          volunteers_needed?: number | null
+          zip?: string | null
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          company_name?: string
+          contact_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          location_preference?: string | null
+          needs_electricity?: boolean | null
+          needs_tent?: boolean | null
+          notes?: string | null
+          past_participation?: string | null
+          phone?: string | null
+          solicited_for_auction?: string | null
+          solicitor?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          vendor_type?: string
+          volunteers_needed?: number | null
+          zip?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +335,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
