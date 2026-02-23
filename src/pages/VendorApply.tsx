@@ -165,59 +165,45 @@ const VendorApply = () => {
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-3xl">
           {/* Hero header */}
-          <div className="text-center mb-12">
-            <h1 className="font-display font-black text-foreground text-4xl md:text-5xl mb-3">
+          <div className="text-center mb-6">
+            <h1 className="font-display font-black text-foreground text-3xl md:text-4xl mb-2">
               Become a Vendor
             </h1>
-            <p className="font-body text-muted-foreground text-lg max-w-xl mx-auto">
+            <p className="font-body text-muted-foreground text-sm max-w-xl mx-auto">
               Join Sacramento's best restaurants, wineries, and breweries at the 37th Annual
               Christian Brothers Extravaganza — Saturday, September 6, 2025.
             </p>
           </div>
 
           {/* Info sections */}
-          <section className="mb-12 space-y-8">
-            <div className="bg-card border border-border rounded-xl p-6 md:p-8 space-y-4">
-              <h2 className="font-display font-bold text-2xl text-foreground">What We Ask</h2>
-              <ul className="font-body text-muted-foreground space-y-2 list-disc list-inside">
-                <li>Provide approximately <strong className="text-foreground">300 small bites or tastes</strong> (mini sliders, charcuterie samples, dessert bites, etc.).</li>
-                <li>Wine: recommend 1–2 oz pours; minimum 2 cases / 24 bottles.</li>
-                <li>Beer / cider / seltzer: recommend 3–4 oz pours.</li>
-                <li>We prefer <strong className="text-foreground">2–4 servers</strong> for face-to-face guest interaction. If you can only donate product, volunteers will help serve.</li>
+          <section className="mb-8 grid md:grid-cols-3 gap-4">
+            <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+              <h2 className="font-display font-bold text-sm text-foreground">What We Ask</h2>
+              <ul className="font-body text-muted-foreground space-y-1 list-disc list-inside text-xs">
+                <li><strong className="text-foreground">~300 small bites/tastes</strong></li>
+                <li>Wine: 1–2 oz pours; min 2 cases</li>
+                <li>Beer/cider: 3–4 oz pours</li>
+                <li>2–4 servers preferred</li>
               </ul>
             </div>
 
-            <div className="bg-card border border-border rounded-xl p-6 md:p-8 space-y-4">
-              <h2 className="font-display font-bold text-2xl text-foreground">What We Provide</h2>
-              <ul className="font-body text-muted-foreground space-y-2 list-disc list-inside">
+            <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+              <h2 className="font-display font-bold text-sm text-foreground">What We Provide</h2>
+              <ul className="font-body text-muted-foreground space-y-1 list-disc list-inside text-xs">
                 <li>8 ft table with linens</li>
                 <li>Large beverage tub with ice</li>
                 <li>Paper products for serving</li>
-                <li>Guests bring their own event glassware</li>
+                <li>Guests bring event glassware</li>
               </ul>
             </div>
 
-            <div className="bg-card border border-border rounded-xl p-6 md:p-8 space-y-4">
-              <h2 className="font-display font-bold text-2xl text-foreground">Event Details</h2>
-              <ul className="font-body text-muted-foreground space-y-2 list-disc list-inside">
-                <li><strong className="text-foreground">Date:</strong> Saturday, September 6, 2025</li>
-                <li><strong className="text-foreground">Hours:</strong> 5:30 PM – 10:00 PM</li>
-                <li><strong className="text-foreground">VIP Early Access:</strong> 5:30 – 7:00 PM (~400 VIP guests)</li>
-                <li><strong className="text-foreground">General Admission:</strong> 7:00 PM (1,600+ guests)</li>
-                <li><strong className="text-foreground">Setup:</strong> As early as 2:00 PM</li>
-                <li><strong className="text-foreground">Location:</strong> Christian Brothers High School, 4315 MLK Jr. Blvd, Sacramento, CA 95820</li>
-              </ul>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6 md:p-8 space-y-4">
-              <h2 className="font-display font-bold text-2xl text-foreground">Vendor Benefits</h2>
-              <ul className="font-body text-muted-foreground space-y-2 list-disc list-inside">
-                <li>Showcase your business to <strong className="text-foreground">2,000+ attendees</strong></li>
-                <li>Featured in school magazine mailed to <strong className="text-foreground">14,500 homes</strong></li>
-                <li>Included in email campaigns reaching <strong className="text-foreground">10,000+ people</strong></li>
-                <li>Website listing with link to your site</li>
-                <li>Instagram collaboration opportunity @cbextravaganza</li>
-                <li>Distribute menus, business cards, and promotional materials</li>
+            <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+              <h2 className="font-display font-bold text-sm text-foreground">Vendor Benefits</h2>
+              <ul className="font-body text-muted-foreground space-y-1 list-disc list-inside text-xs">
+                <li><strong className="text-foreground">2,000+</strong> attendees</li>
+                <li>Magazine mailed to 14,500 homes</li>
+                <li>Email campaigns to 10,000+</li>
+                <li>Website listing & Instagram collab</li>
               </ul>
             </div>
           </section>
