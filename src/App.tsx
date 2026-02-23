@@ -11,6 +11,7 @@ import MapPage from "./pages/MapPage";
 import Vendors from "./pages/Vendors";
 import Sponsors from "./pages/Sponsors";
 import GetInvolved from "./pages/GetInvolved";
+import VendorApply from "./pages/VendorApply";
 import Contact from "./pages/Contact";
 import AdminLogin from "./pages/AdminLogin";
 import AdminLayout from "./components/AdminLayout";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/tickets" element={<Tickets />} />
             <Route path="/map" element={<MapPage />} />
             <Route path="/vendors" element={<Vendors />} />
+            <Route path="/vendors/apply" element={<VendorApply />} />
             <Route path="/sponsors" element={<Sponsors />} />
             <Route path="/get-involved" element={<GetInvolved />} />
             <Route path="/contact" element={<Contact />} />

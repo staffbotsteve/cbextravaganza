@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -17,6 +18,7 @@ const options = [
     title: "Become a Vendor",
     description: "Showcase your restaurant, winery, brewery, or business to hundreds of Sacramento's finest.",
     cta: "Apply as Vendor",
+    link: "/vendors/apply",
   },
   {
     icon: DollarSign,
@@ -57,14 +59,19 @@ const GetInvolved = () => {
                   <CardDescription className="font-body">{opt.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button className="rounded-full font-body font-bold w-full">{opt.cta}</Button>
+                  {opt.link ? (
+                    <Link to={opt.link}>
+                      <Button className="rounded-full font-body font-bold w-full">{opt.cta}</Button>
+                    </Link>
+                  ) : (
+                    <Button className="rounded-full font-body font-bold w-full">{opt.cta}</Button>
+                  )}
                 </CardContent>
               </Card>
             ))}
           </div>
         </div>
       </main>
-      <Footer />
       <Footer />
     </div>
   );
