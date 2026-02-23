@@ -9,6 +9,7 @@ import {
   HandHeart,
   LogOut,
   Shield,
+  ShieldCheck,
   Menu,
   X,
 } from "lucide-react";
@@ -19,6 +20,7 @@ const sidebarItems = [
   { label: "Sponsors", path: "/admin/sponsors", icon: HandHeart },
   { label: "Vendors", path: "/admin/vendors", icon: Store },
   { label: "Guests", path: "/admin/guests", icon: Users },
+  { label: "Admins", path: "/admin/users", icon: ShieldCheck },
 ];
 
 const AdminLayout = () => {
