@@ -57,7 +57,8 @@ const vendorSchema = z.object({
   needs_electricity: z.boolean().default(false),
   needs_tent: z.boolean().default(false),
   volunteers_needed: z.number().int().min(0).max(10).default(0),
-  past_participation: z.string().trim().max(200).optional().or(z.literal("")),
+  has_past_participation: z.enum(["yes", "no"]).default("no"),
+  past_participation_years: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(2000).optional().or(z.literal("")),
 });
 
@@ -85,7 +86,8 @@ const VendorApply = () => {
       needs_electricity: false,
       needs_tent: false,
       volunteers_needed: 0,
-      past_participation: "",
+      has_past_participation: "no",
+      past_participation_years: "",
       notes: "",
     },
   });
@@ -93,7 +95,14 @@ const VendorApply = () => {
   const onSubmit = async (values: VendorFormData) => {
     setSubmitting(true);
     try {
-      const { error } = await supabase.from("vendors").insert({
+      // Check for existing vendor by company name (case-insensitive)
+      const { data: existing } = await supabase
+        .from("vendors")
+        .select("id")
+        .ilike("company_name", values.company_name.trim())
+        .maybeSingle();
+
+      const vendorData = {
         company_name: values.company_name,
         vendor_type: values.vendor_type,
         contact_name: values.contact_name,
@@ -108,10 +117,21 @@ const VendorApply = () => {
         needs_electricity: values.needs_electricity,
         needs_tent: values.needs_tent,
         volunteers_needed: values.volunteers_needed,
-        past_participation: values.past_participation || null,
+        past_participation: values.has_past_participation === "yes" ? (values.past_participation_years || "Yes") : null,
         notes: values.notes || null,
         status: "Form Received",
-      });
+      };
+
+      let error;
+      if (existing?.id) {
+        // Update existing record
+        const result = await supabase.from("vendors").update(vendorData).eq("id", existing.id);
+        error = result.error;
+      } else {
+        // Insert new record
+        const result = await supabase.from("vendors").insert(vendorData);
+        error = result.error;
+      }
 
       setSubmitting(false);
 
@@ -458,17 +478,42 @@ const VendorApply = () => {
 
                 <FormField
                   control={form.control}
-                  name="past_participation"
+                  name="has_past_participation"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-body">Past Participation</FormLabel>
+                      <FormLabel className="font-body">Have you participated in the Extravaganza before?</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. First-time participant, or 5 years" {...field} />
+                        <RadioGroup value={field.value} onValueChange={field.onChange} className="flex gap-6">
+                          <div className="flex items-center gap-2">
+                            <RadioGroupItem value="yes" id="past-yes" />
+                            <Label htmlFor="past-yes" className="font-body cursor-pointer">Yes</Label>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <RadioGroupItem value="no" id="past-no" />
+                            <Label htmlFor="past-no" className="font-body cursor-pointer">No</Label>
+                          </div>
+                        </RadioGroup>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {form.watch("has_past_participation") === "yes" && (
+                  <FormField
+                    control={form.control}
+                    name="past_participation_years"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-body">Which years did you participate?</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. 2022, 2023, 2024" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}
