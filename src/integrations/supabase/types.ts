@@ -146,6 +146,90 @@ export type Database = {
         }
         Relationships: []
       }
+      ticket_inventory: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          price_cents: number
+          remaining_available: number
+          sort_order: number
+          stripe_price_id: string
+          ticket_type: string
+          total_available: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          price_cents: number
+          remaining_available?: number
+          sort_order?: number
+          stripe_price_id: string
+          ticket_type: string
+          total_available?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          price_cents?: number
+          remaining_available?: number
+          sort_order?: number
+          stripe_price_id?: string
+          ticket_type?: string
+          total_available?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ticket_purchases: {
+        Row: {
+          created_at: string
+          donation_amount: number | null
+          email: string | null
+          general_qty: number
+          id: string
+          parking_qty: number
+          payment_status: string
+          stripe_session_id: string | null
+          total_cents: number
+          updated_at: string
+          vip_qty: number
+        }
+        Insert: {
+          created_at?: string
+          donation_amount?: number | null
+          email?: string | null
+          general_qty?: number
+          id?: string
+          parking_qty?: number
+          payment_status?: string
+          stripe_session_id?: string | null
+          total_cents?: number
+          updated_at?: string
+          vip_qty?: number
+        }
+        Update: {
+          created_at?: string
+          donation_amount?: number | null
+          email?: string | null
+          general_qty?: number
+          id?: string
+          parking_qty?: number
+          payment_status?: string
+          stripe_session_id?: string | null
+          total_cents?: number
+          updated_at?: string
+          vip_qty?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
