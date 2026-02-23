@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import DonationBanner from "@/components/DonationBanner";
 
 const MapPage = () => {
   return (
@@ -21,6 +22,7 @@ const MapPage = () => {
           </div>
         </div>
       </main>
+      <DonationBanner />
       <Footer />
     </div>
   );
