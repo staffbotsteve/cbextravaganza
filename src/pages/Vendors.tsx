@@ -66,7 +66,7 @@ const Vendors = () => {
 
           <div className="text-center">
             <p className="font-body text-muted-foreground mb-4">Interested in becoming a vendor?</p>
-            <Link to="/get-involved">
+            <Link to="/vendors/apply">
               <Button className="rounded-full font-body font-bold">Apply as a Vendor</Button>
             </Link>
           </div>
