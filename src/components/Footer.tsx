@@ -34,7 +34,7 @@ const Footer = () => {
             <h4 className="font-display font-bold mb-4">Contact</h4>
             <div className="space-y-2 font-body text-sm text-secondary-foreground/70">
               <p>Christian Brothers High School</p>
-              <p>Memphis, TN</p>
+              <p>Sacramento, CA</p>
               <p>extravaganza@cbhs.org</p>
             </div>
           </div>

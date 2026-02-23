@@ -50,7 +50,7 @@ const SponsorsPreviewSection = () => {
             Our Vendors & Sponsors
           </h2>
           <p className="font-body text-muted-foreground text-lg max-w-xl mx-auto">
-            Memphis's finest wineries, breweries, restaurants, and sponsors come together for one great cause.
+            Sacramento's finest wineries, breweries, restaurants, and sponsors come together for one great cause.
           </p>
         </motion.div>
 

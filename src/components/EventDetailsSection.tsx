@@ -10,7 +10,7 @@ const details = [
   {
     icon: MapPin,
     title: "Location",
-    description: "Christian Brothers High School Campus, Memphis, TN. Outdoor festival grounds with multiple stages and vendor areas.",
+    description: "Christian Brothers High School Campus, Sacramento, CA. Outdoor festival grounds with multiple stages and vendor areas.",
   },
   {
     icon: Clock,
