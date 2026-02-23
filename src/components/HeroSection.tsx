@@ -53,7 +53,7 @@ const HeroSection = () => {
             transition={{ delay: 0.7 }}
             className="font-body text-primary-foreground/90 text-base md:text-lg max-w-lg mb-8 leading-relaxed"
           >
-            For 150 years, Christian Brothers has shaped the lives of young men in Sacramento.
+            For 150 years, Christian Brothers has shaped the lives of young men and women in Sacramento.
             This year, we celebrate that legacy alongside the incredible local businesses
             that make our community thrive. Join us for an evening of world-class food,
             wine, craft beer, and live music—all raising critical funds for tuition

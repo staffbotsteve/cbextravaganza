@@ -57,7 +57,7 @@ const DonationBanner = () => {
               FOR EVERY STUDENT
             </h2>
             <p className="font-body text-primary-foreground/80 text-base md:text-lg max-w-md leading-relaxed mb-6">
-              Together, we can ensure every deserving young man has access to a 
+              Together, we can ensure every deserving student has access to a 
               Christian Brothers education through the Tuition Assistance Fund.
             </p>
             <div className="flex items-center gap-3">
