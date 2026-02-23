@@ -16,7 +16,7 @@ const MapPage = () => {
 
           <div className="max-w-4xl mx-auto bg-muted rounded-2xl p-12 text-center border border-border">
             <p className="font-body text-muted-foreground text-lg">
-              Event map coming soon! Check back as we get closer to September 6, 2025.
+              Event map coming soon! Check back as we get closer to September 12, 2026.
             </p>
           </div>
         </div>

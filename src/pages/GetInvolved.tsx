@@ -40,7 +40,7 @@ const GetInvolved = () => {
           <div className="text-center mb-14">
             <h1 className="font-display font-black text-foreground text-4xl md:text-5xl mb-3">Get Involved</h1>
             <p className="font-body text-muted-foreground text-lg max-w-xl mx-auto">
-              There are many ways to support the 36th Annual Christian Brothers Extravaganza.
+              There are many ways to support the 37th Annual Christian Brothers Extravaganza.
             </p>
           </div>
 

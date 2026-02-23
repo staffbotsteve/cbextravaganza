@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['"Playfair Display"', 'serif'],
-        body: ['"Nunito Sans"', 'sans-serif'],
+        display: ['"Montserrat"', 'sans-serif'],
+        body: ['"Open Sans"', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -77,8 +77,8 @@ export default {
           to: { height: "0" },
         },
         "pulse-glow": {
-          "0%, 100%": { boxShadow: "0 0 20px hsl(351 85% 42% / 0.3)" },
-          "50%": { boxShadow: "0 0 40px hsl(351 85% 42% / 0.6)" },
+          "0%, 100%": { boxShadow: "0 0 20px hsl(215 80% 45% / 0.3)" },
+          "50%": { boxShadow: "0 0 40px hsl(215 80% 45% / 0.6)" },
         },
       },
       animation: {

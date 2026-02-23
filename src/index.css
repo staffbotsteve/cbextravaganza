@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Nunito+Sans:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -15,35 +15,35 @@
     --popover: 0 0% 100%;
     --popover-foreground: 216 50% 20%;
 
-    --primary: 351 85% 42%;
+    --primary: 215 80% 45%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 216 50% 20%;
+    --secondary: 215 55% 18%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 216 20% 95%;
-    --muted-foreground: 216 20% 46%;
+    --muted: 215 25% 94%;
+    --muted-foreground: 215 20% 46%;
 
     --accent: 40 90% 55%;
-    --accent-foreground: 216 50% 15%;
+    --accent-foreground: 215 55% 12%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 216 20% 88%;
-    --input: 216 20% 88%;
-    --ring: 351 85% 42%;
+    --border: 215 20% 88%;
+    --input: 215 20% 88%;
+    --ring: 215 80% 45%;
 
     --radius: 0.625rem;
 
-    --sidebar-background: 216 50% 15%;
+    --sidebar-background: 215 55% 14%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 351 85% 42%;
+    --sidebar-primary: 215 80% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 216 50% 22%;
+    --sidebar-accent: 215 55% 22%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 216 40% 25%;
-    --sidebar-ring: 351 85% 42%;
+    --sidebar-border: 215 40% 25%;
+    --sidebar-ring: 215 80% 45%;
   }
 
   .dark {
@@ -56,33 +56,33 @@
     --popover: 216 50% 12%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 351 85% 50%;
+    --primary: 215 80% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 216 40% 25%;
+    --secondary: 215 45% 22%;
     --secondary-foreground: 0 0% 95%;
 
-    --muted: 216 40% 18%;
-    --muted-foreground: 216 15% 60%;
+    --muted: 215 40% 18%;
+    --muted-foreground: 215 15% 60%;
 
     --accent: 40 90% 55%;
-    --accent-foreground: 216 50% 10%;
+    --accent-foreground: 215 55% 10%;
 
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 216 40% 20%;
-    --input: 216 40% 20%;
-    --ring: 351 85% 50%;
+    --border: 215 40% 20%;
+    --input: 215 40% 20%;
+    --ring: 215 80% 50%;
 
-    --sidebar-background: 216 50% 6%;
+    --sidebar-background: 215 55% 6%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 351 85% 50%;
+    --sidebar-primary: 215 80% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 216 50% 15%;
+    --sidebar-accent: 215 55% 15%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 216 40% 15%;
-    --sidebar-ring: 351 85% 50%;
+    --sidebar-border: 215 40% 15%;
+    --sidebar-ring: 215 80% 50%;
   }
 }
 
@@ -94,6 +94,6 @@
     @apply bg-background text-foreground font-body;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
   }
 }
