@@ -14,7 +14,7 @@ const options = [
   {
     icon: Store,
     title: "Become a Vendor",
-    description: "Showcase your restaurant, winery, brewery, or business to hundreds of Memphis's finest.",
+    description: "Showcase your restaurant, winery, brewery, or business to hundreds of Sacramento's finest.",
     cta: "Apply as Vendor",
   },
   {

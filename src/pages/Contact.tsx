@@ -67,8 +67,8 @@ const Contact = () => {
                   <p className="font-body font-bold text-foreground">Address</p>
                   <p className="font-body text-muted-foreground text-sm">
                     Christian Brothers High School<br />
-                    5900 Walnut Grove Rd<br />
-                    Memphis, TN 38120
+                    4315 Martin Luther King Jr Blvd<br />
+                    Sacramento, CA 95820
                   </p>
                 </div>
               </div>
