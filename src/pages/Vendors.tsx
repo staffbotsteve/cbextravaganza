@@ -73,7 +73,6 @@ const Vendors = () => {
         </div>
       </main>
       <Footer />
-      <Footer />
     </div>
   );
 };
