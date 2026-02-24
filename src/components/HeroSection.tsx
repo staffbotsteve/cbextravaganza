@@ -107,7 +107,7 @@ const HeroSection = () => {
             className="lg:col-span-2 flex flex-col items-center lg:items-end gap-4"
           >
             <TicketCard />
-            <DonationCard />
+            
           </motion.div>
         </div>
 
