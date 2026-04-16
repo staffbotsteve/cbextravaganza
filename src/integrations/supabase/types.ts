@@ -14,6 +14,270 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          body: string | null
+          contact_id: string | null
+          created_at: string
+          direction: string | null
+          id: string
+          logged_by: string | null
+          occurred_at: string | null
+          org_id: string
+          subject: string | null
+          type: string | null
+        }
+        Insert: {
+          body?: string | null
+          contact_id?: string | null
+          created_at?: string
+          direction?: string | null
+          id?: string
+          logged_by?: string | null
+          occurred_at?: string | null
+          org_id: string
+          subject?: string | null
+          type?: string | null
+        }
+        Update: {
+          body?: string | null
+          contact_id?: string | null
+          created_at?: string
+          direction?: string | null
+          id?: string
+          logged_by?: string | null
+          occurred_at?: string | null
+          org_id?: string
+          subject?: string | null
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contacts: {
+        Row: {
+          cb_connection: string | null
+          created_at: string
+          email: string | null
+          first_name: string | null
+          id: string
+          is_primary: boolean | null
+          last_name: string | null
+          org_id: string | null
+          phone: string | null
+        }
+        Insert: {
+          cb_connection?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          is_primary?: boolean | null
+          last_name?: string | null
+          org_id?: string | null
+          phone?: string | null
+        }
+        Update: {
+          cb_connection?: string | null
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          is_primary?: boolean | null
+          last_name?: string | null
+          org_id?: string | null
+          phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contacts_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          created_at: string
+          file_url: string | null
+          id: string
+          org_id: string
+          sent_at: string | null
+          signed_at: string | null
+          status: string | null
+          type: string | null
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          org_id: string
+          sent_at?: string | null
+          signed_at?: string | null
+          status?: string | null
+          type?: string | null
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          org_id?: string
+          sent_at?: string | null
+          signed_at?: string | null
+          status?: string | null
+          type?: string | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          state: string | null
+          type: string | null
+          updated_at: string
+          website: string | null
+          zip: string | null
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          state?: string | null
+          type?: string | null
+          updated_at?: string
+          website?: string | null
+          zip?: string | null
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          state?: string | null
+          type?: string | null
+          updated_at?: string
+          website?: string | null
+          zip?: string | null
+        }
+        Relationships: []
+      }
+      participation: {
+        Row: {
+          booth_zone: string | null
+          created_at: string
+          electric: boolean | null
+          id: string
+          in_slideshow: boolean | null
+          org_id: string
+          owner_name: string | null
+          parking_qty: number | null
+          payment_amount: number | null
+          payment_method: string | null
+          payment_status: string | null
+          role: string | null
+          sponsor_tier: string | null
+          sponsor_value: number | null
+          status: string | null
+          tent: boolean | null
+          tickets_qty: number | null
+          updated_at: string
+          volunteers_needed: number | null
+          year: number
+        }
+        Insert: {
+          booth_zone?: string | null
+          created_at?: string
+          electric?: boolean | null
+          id?: string
+          in_slideshow?: boolean | null
+          org_id: string
+          owner_name?: string | null
+          parking_qty?: number | null
+          payment_amount?: number | null
+          payment_method?: string | null
+          payment_status?: string | null
+          role?: string | null
+          sponsor_tier?: string | null
+          sponsor_value?: number | null
+          status?: string | null
+          tent?: boolean | null
+          tickets_qty?: number | null
+          updated_at?: string
+          volunteers_needed?: number | null
+          year: number
+        }
+        Update: {
+          booth_zone?: string | null
+          created_at?: string
+          electric?: boolean | null
+          id?: string
+          in_slideshow?: boolean | null
+          org_id?: string
+          owner_name?: string | null
+          parking_qty?: number | null
+          payment_amount?: number | null
+          payment_method?: string | null
+          payment_status?: string | null
+          role?: string | null
+          sponsor_tier?: string | null
+          sponsor_value?: number | null
+          status?: string | null
+          tent?: boolean | null
+          tickets_qty?: number | null
+          updated_at?: string
+          volunteers_needed?: number | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participation_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sponsors: {
         Row: {
           address_line1: string | null
