@@ -20,11 +20,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const checkAdmin = async (userId: string) => {
-    const { data } = await supabase.rpc("has_role", {
-      _user_id: userId,
-      _role: "admin",
-    });
-    setIsAdmin(!!data);
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const res = await fetch(
+        `${supabaseUrl}/rest/v1/rpc/has_role`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+          },
+          body: JSON.stringify({ _user_id: userId, _role: "admin" }),
+        }
+      );
+      const data = await res.json();
+      setIsAdmin(!!data);
+    } catch {
+      setIsAdmin(false);
+    }
   };
 
   useEffect(() => {
