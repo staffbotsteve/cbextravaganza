@@ -166,6 +166,7 @@ export type Database = {
           name: string
           notes: string | null
           state: string | null
+          temp_id: number | null
           type: string | null
           updated_at: string
           website: string | null
@@ -180,6 +181,7 @@ export type Database = {
           name: string
           notes?: string | null
           state?: string | null
+          temp_id?: number | null
           type?: string | null
           updated_at?: string
           website?: string | null
@@ -194,6 +196,7 @@ export type Database = {
           name?: string
           notes?: string | null
           state?: string | null
+          temp_id?: number | null
           type?: string | null
           updated_at?: string
           website?: string | null
