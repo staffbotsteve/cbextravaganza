@@ -77,6 +77,9 @@ const SponsorApply = () => {
       sponsorship_level_id: "",
       preferred_venue: "",
       notes: "",
+      signature_name: "",
+      signature_title: "",
+      agree_terms: false,
     },
   });
 
