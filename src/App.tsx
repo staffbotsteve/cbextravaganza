@@ -17,8 +17,10 @@ import Contact from "./pages/Contact";
 import AdminLogin from "./pages/AdminLogin";
 import AdminLayout from "./components/AdminLayout";
 import AdminOverview from "./pages/admin/AdminOverview";
-import AdminSponsors from "./pages/admin/AdminSponsors";
-import AdminVendors from "./pages/admin/AdminVendors";
+import AdminOrganizations from "./pages/admin/AdminOrganizations";
+import AdminContacts from "./pages/admin/AdminContacts";
+import AdminActivities from "./pages/admin/AdminActivities";
+import AdminDocuments from "./pages/admin/AdminDocuments";
 import AdminGuests from "./pages/admin/AdminGuests";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminSponsorshipLevels from "./pages/admin/AdminSponsorshipLevels";
@@ -48,8 +50,10 @@ const App = () => (
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminOverview />} />
-              <Route path="sponsors" element={<AdminSponsors />} />
-              <Route path="vendors" element={<AdminVendors />} />
+              <Route path="organizations" element={<AdminOrganizations />} />
+              <Route path="contacts" element={<AdminContacts />} />
+              <Route path="activities" element={<AdminActivities />} />
+              <Route path="documents" element={<AdminDocuments />} />
               <Route path="guests" element={<AdminGuests />} />
               <Route path="users" element={<AdminUsers />} />
               <Route path="sponsorship-levels" element={<AdminSponsorshipLevels />} />
