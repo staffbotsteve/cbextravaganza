@@ -20,7 +20,8 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Mail, Phone, Building2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Mail, Phone, Building2, CheckCircle2, AlertCircle, PenLine } from "lucide-react";
 
 const sponsorSchema = z.object({
   company_name: z.string().trim().min(1, "Sponsor name is required").max(200),
@@ -35,6 +36,11 @@ const sponsorSchema = z.object({
   sponsorship_level_id: z.string().min(1, "Please select a sponsorship level"),
   preferred_venue: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(2000).optional().or(z.literal("")),
+  signature_name: z.string().trim().min(2, "Please type your full name to sign").max(200),
+  signature_title: z.string().trim().max(200).optional().or(z.literal("")),
+  agree_terms: z.boolean().refine((v) => v === true, {
+    message: "You must agree to the sponsorship terms",
+  }),
 });
 
 type SponsorFormData = z.infer<typeof sponsorSchema>;
