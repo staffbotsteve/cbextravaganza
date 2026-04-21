@@ -13,7 +13,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-const CURRENT_YEAR = 2026;
+const CURRENT_YEAR = 2025;
 
 const STATUSES = [
   "Prospect",
