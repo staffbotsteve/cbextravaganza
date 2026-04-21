@@ -20,7 +20,8 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Mail, Phone, Building2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Mail, Phone, Building2, CheckCircle2, AlertCircle, PenLine } from "lucide-react";
 
 const sponsorSchema = z.object({
   company_name: z.string().trim().min(1, "Sponsor name is required").max(200),
@@ -35,6 +36,11 @@ const sponsorSchema = z.object({
   sponsorship_level_id: z.string().min(1, "Please select a sponsorship level"),
   preferred_venue: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(2000).optional().or(z.literal("")),
+  signature_name: z.string().trim().min(2, "Please type your full name to sign").max(200),
+  signature_title: z.string().trim().max(200).optional().or(z.literal("")),
+  agree_terms: z.boolean().refine((v) => v === true, {
+    message: "You must agree to the sponsorship terms",
+  }),
 });
 
 type SponsorFormData = z.infer<typeof sponsorSchema>;
@@ -71,6 +77,9 @@ const SponsorApply = () => {
       sponsorship_level_id: "",
       preferred_venue: "",
       notes: "",
+      signature_name: "",
+      signature_title: "",
+      agree_terms: false,
     },
   });
 
@@ -80,7 +89,11 @@ const SponsorApply = () => {
     setSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-sponsor-checkout", {
-        body: values,
+        body: {
+          ...values,
+          signed_at: new Date().toISOString(),
+          signed_user_agent: navigator.userAgent,
+        },
       });
 
       if (error) throw error;
@@ -397,13 +410,99 @@ const SponsorApply = () => {
                 To ensure inclusion in printed materials, please respond by <strong className="text-foreground">July 31, 2025</strong>.
               </p>
 
+              {/* E-Signature & Agreement */}
+              <div className="space-y-4 border-2 border-primary/30 rounded-xl p-5 bg-primary/5">
+                <h3 className="font-display font-bold text-lg text-foreground flex items-center gap-2">
+                  <PenLine className="h-5 w-5 text-primary" /> Sign Sponsorship Agreement
+                </h3>
+
+                <div className="bg-background rounded-lg p-4 max-h-40 overflow-y-auto border border-border">
+                  <p className="font-body text-xs text-muted-foreground leading-relaxed">
+                    By signing below, the undersigned ("Sponsor") agrees to support the
+                    37th Annual CB Extravaganza presented by Christian Brothers High School
+                    at the sponsorship level selected above. Sponsor authorizes payment
+                    in the amount shown for the selected level and grants Christian
+                    Brothers High School the right to use Sponsor's name and logo in
+                    event-related materials (website, magazine, signage, glassware where
+                    applicable). Sponsor confirms that the artwork submitted is owned or
+                    licensed by Sponsor for this purpose. Christian Brothers High School
+                    is a 501(c)(3) nonprofit organization (Federal Tax ID #68-0322360);
+                    sponsorships are tax-deductible to the extent allowed by law, less
+                    the fair market value of any goods or services received. This
+                    electronic signature has the same legal effect as a handwritten
+                    signature pursuant to the federal E-SIGN Act and the California
+                    Uniform Electronic Transactions Act.
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="signature_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-body">Type your full name to sign *</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Your full legal name"
+                            className="font-display italic text-lg"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="signature_title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-body">Title / Role</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Owner, CEO, Director" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <p className="font-body text-xs text-muted-foreground">
+                  Date: <strong className="text-foreground">{new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</strong>
+                </p>
+
+                <FormField
+                  control={form.control}
+                  name="agree_terms"
+                  render={({ field }) => (
+                    <FormItem className="flex items-start gap-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="mt-1"
+                        />
+                      </FormControl>
+                      <div className="flex-1">
+                        <FormLabel className="font-body text-sm cursor-pointer leading-snug">
+                          I have read and agree to the sponsorship terms above, and I am
+                          authorized to commit the sponsor named above to this agreement. *
+                        </FormLabel>
+                        <FormMessage />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <Button
                 type="submit"
                 size="lg"
-                disabled={submitting || !selectedLevelId}
+                disabled={submitting || !selectedLevelId || !form.watch("agree_terms") || !form.watch("signature_name")}
                 className="w-full rounded-full font-body font-bold text-lg"
               >
-                {submitting ? "Processing..." : "Continue to Payment"}
+                {submitting ? "Processing..." : "Sign & Continue to Payment"}
               </Button>
 
               <p className="font-body text-xs text-muted-foreground text-center">
