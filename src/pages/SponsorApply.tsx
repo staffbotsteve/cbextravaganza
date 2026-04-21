@@ -499,10 +499,10 @@ const SponsorApply = () => {
               <Button
                 type="submit"
                 size="lg"
-                disabled={submitting || !selectedLevelId}
+                disabled={submitting || !selectedLevelId || !form.watch("agree_terms") || !form.watch("signature_name")}
                 className="w-full rounded-full font-body font-bold text-lg"
               >
-                {submitting ? "Processing..." : "Continue to Payment"}
+                {submitting ? "Processing..." : "Sign & Continue to Payment"}
               </Button>
 
               <p className="font-body text-xs text-muted-foreground text-center">
