@@ -162,6 +162,7 @@ export type Database = {
           address_line2: string | null
           city: string | null
           created_at: string
+          email: string | null
           id: string
           name: string
           notes: string | null
@@ -177,6 +178,7 @@ export type Database = {
           address_line2?: string | null
           city?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           name: string
           notes?: string | null
@@ -192,6 +194,7 @@ export type Database = {
           address_line2?: string | null
           city?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           name?: string
           notes?: string | null
@@ -207,16 +210,22 @@ export type Database = {
       participation: {
         Row: {
           booth_zone: string | null
+          cb_solicitor: string | null
           created_at: string
+          donate_only: boolean | null
           electric: boolean | null
           id: string
           in_slideshow: boolean | null
           org_id: string
+          other_beverage_quantity: string | null
           owner_name: string | null
           parking_qty: number | null
           payment_amount: number | null
           payment_method: string | null
           payment_status: string | null
+          preferred_venue: string | null
+          product_description: string | null
+          representatives: string[] | null
           role: string | null
           sponsor_tier: string | null
           sponsor_value: number | null
@@ -224,21 +233,29 @@ export type Database = {
           tent: boolean | null
           tickets_qty: number | null
           updated_at: string
+          vendor_type: string | null
           volunteers_needed: number | null
+          wine_quantity: string | null
           year: number
         }
         Insert: {
           booth_zone?: string | null
+          cb_solicitor?: string | null
           created_at?: string
+          donate_only?: boolean | null
           electric?: boolean | null
           id?: string
           in_slideshow?: boolean | null
           org_id: string
+          other_beverage_quantity?: string | null
           owner_name?: string | null
           parking_qty?: number | null
           payment_amount?: number | null
           payment_method?: string | null
           payment_status?: string | null
+          preferred_venue?: string | null
+          product_description?: string | null
+          representatives?: string[] | null
           role?: string | null
           sponsor_tier?: string | null
           sponsor_value?: number | null
@@ -246,21 +263,29 @@ export type Database = {
           tent?: boolean | null
           tickets_qty?: number | null
           updated_at?: string
+          vendor_type?: string | null
           volunteers_needed?: number | null
+          wine_quantity?: string | null
           year: number
         }
         Update: {
           booth_zone?: string | null
+          cb_solicitor?: string | null
           created_at?: string
+          donate_only?: boolean | null
           electric?: boolean | null
           id?: string
           in_slideshow?: boolean | null
           org_id?: string
+          other_beverage_quantity?: string | null
           owner_name?: string | null
           parking_qty?: number | null
           payment_amount?: number | null
           payment_method?: string | null
           payment_status?: string | null
+          preferred_venue?: string | null
+          product_description?: string | null
+          representatives?: string[] | null
           role?: string | null
           sponsor_tier?: string | null
           sponsor_value?: number | null
@@ -268,7 +293,9 @@ export type Database = {
           tent?: boolean | null
           tickets_qty?: number | null
           updated_at?: string
+          vendor_type?: string | null
           volunteers_needed?: number | null
+          wine_quantity?: string | null
           year?: number
         }
         Relationships: [
