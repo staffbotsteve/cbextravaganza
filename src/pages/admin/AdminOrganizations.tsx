@@ -23,7 +23,7 @@ import {
 import { Search, Building2 } from "lucide-react";
 import OrgDetailDrawer from "@/components/admin/OrgDetailDrawer";
 
-const CURRENT_YEAR = 2026;
+const CURRENT_YEAR = 2025;
 const ROLES = ["Sponsor", "Vendor", "Distributor", "Class Table"] as const;
 const STATUSES = [
   "Prospect",
