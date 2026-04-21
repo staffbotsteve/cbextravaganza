@@ -1,0 +1,1 @@
+TRUNCATE TABLE participation, contacts, organizations RESTART IDENTITY CASCADE;
