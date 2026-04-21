@@ -89,7 +89,11 @@ const SponsorApply = () => {
     setSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-sponsor-checkout", {
-        body: values,
+        body: {
+          ...values,
+          signed_at: new Date().toISOString(),
+          signed_user_agent: navigator.userAgent,
+        },
       });
 
       if (error) throw error;
