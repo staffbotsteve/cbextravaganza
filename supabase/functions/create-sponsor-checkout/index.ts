@@ -29,10 +29,18 @@ serve(async (req) => {
       zip,
       preferred_venue,
       notes,
+      signature_name,
+      signature_title,
+      agree_terms,
+      signed_at,
+      signed_user_agent,
     } = await req.json();
 
     if (!sponsorship_level_id || !company_name || !contact_name || !email) {
       throw new Error("Missing required fields");
+    }
+    if (!signature_name || !agree_terms) {
+      throw new Error("Signature and agreement are required");
     }
 
     const supabaseAdmin = createClient(
