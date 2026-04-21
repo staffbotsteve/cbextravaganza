@@ -4,28 +4,33 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+const EVENT_YEAR = 2026;
+
 const SponsorsPreviewSection = () => {
   const { data: sponsors } = useQuery({
-    queryKey: ["sponsors-preview"],
+    queryKey: ["sponsors-preview", EVENT_YEAR],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("sponsors")
-        .select("id, company_name, sponsorship_level")
+        .from("participation")
+        .select("id, in_slideshow, sponsor_value, organizations(name)")
+        .eq("year", EVENT_YEAR)
+        .eq("role", "sponsor")
         .eq("in_slideshow", true)
-        .order("value", { ascending: false });
+        .order("sponsor_value", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
 
   const { data: vendors } = useQuery({
-    queryKey: ["vendors-preview"],
+    queryKey: ["vendors-preview", EVENT_YEAR],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("vendors")
-        .select("id, company_name")
+        .from("participation")
+        .select("id, organizations(name)")
+        .eq("year", EVENT_YEAR)
+        .eq("role", "vendor")
         .in("status", ["Form Received", "Confirmed"])
-        .order("company_name")
         .limit(20);
       if (error) throw error;
       return data;
@@ -33,9 +38,9 @@ const SponsorsPreviewSection = () => {
   });
 
   const allNames = [
-    ...(sponsors?.map((s) => s.company_name) ?? []),
-    ...(vendors?.map((v) => v.company_name) ?? []),
-  ];
+    ...(sponsors?.map((s) => s.organizations?.name).filter(Boolean) ?? []),
+    ...(vendors?.map((v) => v.organizations?.name).filter(Boolean) ?? []),
+  ] as string[];
 
   return (
     <section className="py-20 bg-background">

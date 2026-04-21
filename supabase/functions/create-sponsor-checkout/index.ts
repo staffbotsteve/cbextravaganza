@@ -8,25 +8,40 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const EVENT_YEAR = 2026;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { sponsorship_level_id, company_name, contact_name, email, phone, address_line1, address_line2, city, state, zip, preferred_venue, notes } = await req.json();
+    const {
+      sponsorship_level_id,
+      company_name,
+      contact_name,
+      email,
+      phone,
+      address_line1,
+      address_line2,
+      city,
+      state,
+      zip,
+      preferred_venue,
+      notes,
+    } = await req.json();
 
     if (!sponsorship_level_id || !company_name || !contact_name || !email) {
       throw new Error("Missing required fields");
     }
 
-    // Look up the sponsorship level
-    const supabaseClient = createClient(
+    const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    const { data: level, error: levelError } = await supabaseClient
+    // Look up the sponsorship level
+    const { data: level, error: levelError } = await supabaseAdmin
       .from("sponsorship_levels")
       .select("*")
       .eq("id", sponsorship_level_id)
@@ -78,37 +93,116 @@ serve(async (req) => {
       },
     });
 
-    // Insert sponsor record
-    const { error: insertError } = await supabaseClient.from("sponsors").insert({
-      company_name,
-      contact_name,
+    // ---------- CRM upsert: organizations -> contacts -> participation ----------
+    const orgName = String(company_name).trim();
+
+    // 1) Find or create organization (case-insensitive name match)
+    const { data: existingOrg } = await supabaseAdmin
+      .from("organizations")
+      .select("id")
+      .ilike("name", orgName)
+      .maybeSingle();
+
+    const orgPayload = {
+      name: orgName,
+      type: "Sponsor",
       email,
-      phone: phone || null,
       address_line1: address_line1 || null,
       address_line2: address_line2 || null,
       city: city || null,
-      state: state || null,
+      state: state || "CA",
       zip: zip || null,
-      sponsorship_level: level.name,
-      value: level.amount,
-      ticket_qty: level.tickets_included,
-      parking_qty: level.parking_included,
-      payment_status: "Pending",
-      status: "Form Received",
-      notes: [preferred_venue ? `Preferred venue: ${preferred_venue}` : "", notes || ""].filter(Boolean).join(". ") || null,
-    });
+    };
 
-    if (insertError) {
-      console.error("Sponsor insert error:", insertError);
-      // Don't block checkout - the payment is more important
+    let orgId: string;
+    if (existingOrg?.id) {
+      await supabaseAdmin.from("organizations").update(orgPayload).eq("id", existingOrg.id);
+      orgId = existingOrg.id;
+    } else {
+      const { data, error } = await supabaseAdmin
+        .from("organizations")
+        .insert(orgPayload)
+        .select("id")
+        .single();
+      if (error) throw error;
+      orgId = data.id;
     }
 
-    // Decrement remaining_available using service role for the update
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    // 2) Upsert primary contact (match by email within this org)
+    const [firstName, ...lastParts] = String(contact_name).trim().split(/\s+/);
+    const lastName = lastParts.join(" ") || null;
 
+    const { data: existingContact } = await supabaseAdmin
+      .from("contacts")
+      .select("id")
+      .eq("org_id", orgId)
+      .ilike("email", email)
+      .maybeSingle();
+
+    const contactPayload = {
+      org_id: orgId,
+      first_name: firstName || null,
+      last_name: lastName,
+      email,
+      phone: phone || null,
+      is_primary: true,
+    };
+
+    if (existingContact?.id) {
+      await supabaseAdmin.from("contacts").update(contactPayload).eq("id", existingContact.id);
+    } else {
+      await supabaseAdmin.from("contacts").insert(contactPayload);
+    }
+
+    // 3) Upsert participation row for this year + role=sponsor
+    const { data: existingPart } = await supabaseAdmin
+      .from("participation")
+      .select("id")
+      .eq("org_id", orgId)
+      .eq("year", EVENT_YEAR)
+      .eq("role", "sponsor")
+      .maybeSingle();
+
+    const participationPayload = {
+      org_id: orgId,
+      year: EVENT_YEAR,
+      role: "sponsor",
+      sponsor_tier: level.name,
+      sponsor_value: Number(level.amount),
+      tickets_qty: level.tickets_included ?? 0,
+      parking_qty: level.parking_included ?? 0,
+      preferred_venue: preferred_venue || null,
+      payment_method: "Stripe Checkout",
+      payment_amount: Number(level.amount),
+      payment_status: "Pending",
+      status: "Form Received",
+      owner_name: contact_name,
+    };
+
+    if (existingPart?.id) {
+      await supabaseAdmin
+        .from("participation")
+        .update(participationPayload)
+        .eq("id", existingPart.id);
+    } else {
+      const { error: pErr } = await supabaseAdmin
+        .from("participation")
+        .insert(participationPayload);
+      if (pErr) console.error("Participation insert error:", pErr);
+    }
+
+    // 4) Optional notes -> activity
+    if (notes && String(notes).trim()) {
+      await supabaseAdmin.from("activities").insert({
+        org_id: orgId,
+        type: "form_note",
+        subject: `Sponsor form note (${EVENT_YEAR})`,
+        body: String(notes).trim(),
+        direction: "inbound",
+      });
+    }
+
+    // 5) Decrement remaining sponsorship inventory
     await supabaseAdmin
       .from("sponsorship_levels")
       .update({ remaining_available: level.remaining_available - 1 })
@@ -120,6 +214,7 @@ serve(async (req) => {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
+    console.error("create-sponsor-checkout error:", message);
     return new Response(JSON.stringify({ error: message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,

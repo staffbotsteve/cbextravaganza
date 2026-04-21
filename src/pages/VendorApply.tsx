@@ -42,9 +42,13 @@ import {
   Package,
 } from "lucide-react";
 
+const EVENT_YEAR = 2026;
+
 const vendorSchema = z.object({
   company_name: z.string().trim().min(1, "Vendor / company name is required").max(200),
-  vendor_type: z.string().min(1, "Please select a category"),
+  vendor_type: z.enum(["wine", "beer", "food", "other"], {
+    errorMap: () => ({ message: "Please select a category" }),
+  }),
   participation: z.enum(["yes", "donate_only"]).default("yes"),
   product_description: z.string().trim().max(1000).optional().or(z.literal("")),
   wine_quantity: z.string().trim().max(100).optional().or(z.literal("")),
@@ -64,12 +68,17 @@ const vendorSchema = z.object({
   location_preference: z.string().optional(),
   needs_electricity: z.boolean().default(false),
   needs_tent: z.boolean().default(false),
-  has_past_participation: z.enum(["yes", "no"]).default("no"),
-  past_participation_years: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(2000).optional().or(z.literal("")),
 });
 
 type VendorFormData = z.infer<typeof vendorSchema>;
+
+const VENDOR_TYPE_TO_ORG_TYPE: Record<string, string> = {
+  wine: "Wine",
+  beer: "Beer / Cider",
+  food: "Restaurant",
+  other: "Other Vendor",
+};
 
 const VendorApply = () => {
   const navigate = useNavigate();
@@ -80,7 +89,7 @@ const VendorApply = () => {
     resolver: zodResolver(vendorSchema),
     defaultValues: {
       company_name: "",
-      vendor_type: "",
+      vendor_type: undefined as unknown as VendorFormData["vendor_type"],
       participation: "yes",
       product_description: "",
       wine_quantity: "",
@@ -100,8 +109,6 @@ const VendorApply = () => {
       location_preference: "no_preference",
       needs_electricity: false,
       needs_tent: false,
-      has_past_participation: "no",
-      past_participation_years: "",
       notes: "",
     },
   });
@@ -112,97 +119,157 @@ const VendorApply = () => {
   const onSubmit = async (values: VendorFormData) => {
     setSubmitting(true);
     try {
-      // Build a structured notes payload that captures the additional fields
-      // (the vendors table doesn't have dedicated columns for these yet).
       const reps = [values.rep_1, values.rep_2, values.rep_3, values.rep_4]
         .map((r) => r?.trim())
-        .filter(Boolean);
+        .filter((r): r is string => !!r);
 
-      const extraNotes: string[] = [];
-      extraNotes.push(
-        `Participation: ${values.participation === "yes" ? "Will attend" : "Cannot attend — donating product only"}`,
-      );
-      if (values.product_description?.trim()) extraNotes.push(`Product: ${values.product_description.trim()}`);
-      if (values.wine_quantity?.trim()) extraNotes.push(`Wine qty: ${values.wine_quantity.trim()}`);
-      if (values.other_beverage_quantity?.trim())
-        extraNotes.push(`Other beverage qty: ${values.other_beverage_quantity.trim()}`);
-      if (reps.length > 0) extraNotes.push(`Representatives: ${reps.join(", ")}`);
-      if (values.notes?.trim()) extraNotes.push(`Notes: ${values.notes.trim()}`);
+      const orgName = values.company_name.trim();
+      const orgType = VENDOR_TYPE_TO_ORG_TYPE[values.vendor_type];
 
-      const combinedNotes = extraNotes.join("\n");
-
-      // Check for existing vendor by company name (case-insensitive)
-      const { data: existing } = await supabase
-        .from("vendors")
+      // 1) Upsert organization (case-insensitive name match)
+      const { data: existingOrg, error: orgLookupErr } = await supabase
+        .from("organizations")
         .select("id")
-        .ilike("company_name", values.company_name.trim())
+        .ilike("name", orgName)
         .maybeSingle();
 
-      const vendorData = {
-        company_name: values.company_name,
-        vendor_type: values.vendor_type,
-        contact_name: values.contact_name,
+      if (orgLookupErr) throw orgLookupErr;
+
+      const orgPayload = {
+        name: orgName,
+        type: orgType,
         email: values.email,
-        phone: values.phone,
         address_line1: values.address_line1 || null,
         address_line2: values.address_line2 || null,
         city: values.city || null,
-        state: values.state || null,
+        state: values.state || "CA",
         zip: values.zip || null,
-        location_preference: values.location_preference || null,
-        needs_electricity: values.needs_electricity,
-        needs_tent: values.needs_tent,
-        volunteers_needed: reps.length, // store rep count as volunteer count
-        past_participation:
-          values.has_past_participation === "yes" ? values.past_participation_years || "Yes" : null,
-        notes: combinedNotes || null,
+      };
+
+      let orgId: string;
+      if (existingOrg?.id) {
+        const { error } = await supabase
+          .from("organizations")
+          .update(orgPayload)
+          .eq("id", existingOrg.id);
+        if (error) throw error;
+        orgId = existingOrg.id;
+      } else {
+        const { data, error } = await supabase
+          .from("organizations")
+          .insert(orgPayload)
+          .select("id")
+          .single();
+        if (error) throw error;
+        orgId = data.id;
+      }
+
+      // 2) Upsert primary contact (match by email within this org)
+      const [firstName, ...lastParts] = values.contact_name.trim().split(/\s+/);
+      const lastName = lastParts.join(" ") || null;
+
+      const { data: existingContact } = await supabase
+        .from("contacts")
+        .select("id")
+        .eq("org_id", orgId)
+        .ilike("email", values.email)
+        .maybeSingle();
+
+      const contactPayload = {
+        org_id: orgId,
+        first_name: firstName || null,
+        last_name: lastName,
+        email: values.email,
+        phone: values.phone,
+        is_primary: true,
+      };
+
+      if (existingContact?.id) {
+        await supabase.from("contacts").update(contactPayload).eq("id", existingContact.id);
+      } else {
+        await supabase.from("contacts").insert(contactPayload);
+      }
+
+      // 3) Upsert participation row for this year + role=vendor
+      const { data: existingPart } = await supabase
+        .from("participation")
+        .select("id")
+        .eq("org_id", orgId)
+        .eq("year", EVENT_YEAR)
+        .eq("role", "vendor")
+        .maybeSingle();
+
+      const participationPayload = {
+        org_id: orgId,
+        year: EVENT_YEAR,
+        role: "vendor",
+        vendor_type: values.vendor_type,
+        donate_only: values.participation === "donate_only",
+        product_description: values.product_description || null,
+        wine_quantity: values.wine_quantity || null,
+        other_beverage_quantity: values.other_beverage_quantity || null,
+        representatives: reps.length > 0 ? reps : null,
+        preferred_venue:
+          values.vendor_type === "food" && values.participation === "yes"
+            ? values.location_preference === "no_preference"
+              ? null
+              : values.location_preference || null
+            : null,
+        electric: values.participation === "yes" ? values.needs_electricity : null,
+        tent: values.participation === "yes" ? values.needs_tent : null,
+        owner_name: values.contact_name,
         status: values.participation === "yes" ? "Form Received" : "Donation Only",
       };
 
-      let error;
-      if (existing?.id) {
-        const result = await supabase.from("vendors").update(vendorData).eq("id", existing.id);
-        error = result.error;
+      if (existingPart?.id) {
+        const { error } = await supabase
+          .from("participation")
+          .update(participationPayload)
+          .eq("id", existingPart.id);
+        if (error) throw error;
       } else {
-        const result = await supabase.from("vendors").insert(vendorData);
-        error = result.error;
+        const { error } = await supabase.from("participation").insert(participationPayload);
+        if (error) throw error;
       }
 
-      setSubmitting(false);
-
-      if (error) {
-        console.error("Vendor insert error:", error);
-        toast({
-          title: "Submission failed",
-          description: error.message || "Something went wrong. Please try again or contact us directly.",
-          variant: "destructive",
+      // 4) Optional: free-form notes attached to the org
+      if (values.notes?.trim()) {
+        await supabase.from("activities").insert({
+          org_id: orgId,
+          type: "form_note",
+          subject: `Vendor form note (${EVENT_YEAR})`,
+          body: values.notes.trim(),
+          direction: "inbound",
         });
-        return;
       }
 
-      // Send confirmation email (fire-and-forget)
+      // 5) Send confirmation email (fire-and-forget)
       supabase.functions
         .invoke("send-vendor-confirmation", {
           body: {
             vendor_email: values.email,
             vendor_name: values.contact_name,
             company_name: values.company_name,
-            is_update: !!existing?.id,
+            is_update: !!existingPart?.id,
           },
         })
         .catch((emailErr) => console.error("Email send error:", emailErr));
 
-      const message = existing?.id
-        ? "Welcome back! Your vendor information has been updated."
-        : "Thank you — we'll be in touch soon.";
-      toast({ title: "Application received!", description: message });
+      setSubmitting(false);
+      toast({
+        title: "Application received!",
+        description: existingPart?.id
+          ? "Welcome back! Your vendor information has been updated."
+          : "Thank you — we'll be in touch soon.",
+      });
       navigate("/vendors");
     } catch (err) {
       console.error("Vendor submit exception:", err);
       setSubmitting(false);
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       toast({
         title: "Submission failed",
-        description: "Something went wrong. Please try again or contact us directly.",
+        description: message,
         variant: "destructive",
       });
     }
@@ -290,7 +357,7 @@ const VendorApply = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-body">Category *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
                         </FormControl>
@@ -589,57 +656,17 @@ const VendorApply = () => {
                 </div>
               )}
 
-              {/* Additional */}
+              {/* Additional notes */}
               <div className="space-y-4">
                 <h3 className="font-display font-bold text-lg text-foreground flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-primary" /> Additional Details
+                  <CheckCircle2 className="h-5 w-5 text-primary" /> Additional Notes
                 </h3>
-
-                <FormField
-                  control={form.control}
-                  name="has_past_participation"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-body">Have you participated in the Extravaganza before?</FormLabel>
-                      <FormControl>
-                        <RadioGroup value={field.value} onValueChange={field.onChange} className="flex gap-6">
-                          <div className="flex items-center gap-2">
-                            <RadioGroupItem value="yes" id="past-yes" />
-                            <Label htmlFor="past-yes" className="font-body cursor-pointer">Yes</Label>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <RadioGroupItem value="no" id="past-no" />
-                            <Label htmlFor="past-no" className="font-body cursor-pointer">No</Label>
-                          </div>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {form.watch("has_past_participation") === "yes" && (
-                  <FormField
-                    control={form.control}
-                    name="past_participation_years"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-body">Which years did you participate?</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g. 2022, 2023, 2024" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
 
                 <FormField
                   control={form.control}
                   name="notes"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-body">Additional Notes</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Special equipment needs, dietary info, or anything else we should know..."
