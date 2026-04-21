@@ -6,15 +6,19 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+const EVENT_YEAR = 2026;
+
 const Vendors = () => {
   const { data: vendors, isLoading } = useQuery({
-    queryKey: ["vendors"],
+    queryKey: ["public-vendors", EVENT_YEAR],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("vendors")
-        .select("*")
+        .from("participation")
+        .select("id, vendor_type, status, organizations(id, name)")
+        .eq("year", EVENT_YEAR)
+        .eq("role", "vendor")
         .in("status", ["Form Received", "Confirmed"])
-        .order("company_name");
+        .order("vendor_type");
       if (error) throw error;
       return data;
     },
@@ -27,15 +31,21 @@ const Vendors = () => {
     { type: "other", label: "Specialty Vendors" },
   ];
 
-  const grouped = categories.map((cat) => ({
-    ...cat,
-    items: vendors?.filter((v) => v.vendor_type === cat.type) ?? [],
-  })).filter((g) => g.items.length > 0);
+  const grouped = categories
+    .map((cat) => ({
+      ...cat,
+      items:
+        vendors
+          ?.filter((v) => v.vendor_type === cat.type && v.organizations)
+          .map((v) => ({ id: v.id, name: v.organizations!.name }))
+          .sort((a, b) => a.name.localeCompare(b.name)) ?? [],
+    }))
+    .filter((g) => g.items.length > 0);
 
   return (
     <div className="min-h-screen">
       <Navbar />
-      
+
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-14">
@@ -56,7 +66,7 @@ const Vendors = () => {
                   </h3>
                   <ul className="space-y-1.5">
                     {cat.items.map((v) => (
-                      <li key={v.id} className="font-body text-foreground text-sm">{v.company_name}</li>
+                      <li key={v.id} className="font-body text-foreground text-sm">{v.name}</li>
                     ))}
                   </ul>
                 </div>
