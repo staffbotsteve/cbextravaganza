@@ -19,8 +19,9 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { items, donationAmount } = await req.json();
+    const { items, donationAmount, phone, sms_opt_in, sms_opt_in_url } = await req.json();
     // items: { general: number, vip: number, parking: number }
+    const optedIn = sms_opt_in !== false;
 
     // Fetch inventory to get stripe price IDs and check availability
     const { data: inventory, error: invError } = await supabaseAdmin
@@ -90,6 +91,10 @@ serve(async (req) => {
       donation_amount: donAmt,
       total_cents: totalCents,
       payment_status: "pending",
+      phone: phone || null,
+      sms_opt_in: optedIn,
+      sms_opt_in_at: optedIn ? new Date().toISOString() : null,
+      sms_opt_in_source: optedIn ? (sms_opt_in_url || "ticket_purchase") : null,
     });
 
     // Decrement inventory
