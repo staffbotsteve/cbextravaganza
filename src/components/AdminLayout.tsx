@@ -16,6 +16,7 @@ import {
   X,
   Layers,
   Ticket,
+  MessageSquare,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -27,6 +28,7 @@ const sidebarItems = [
   { label: "Documents", path: "/admin/documents", icon: FileText },
   { label: "Sponsorship Levels", path: "/admin/sponsorship-levels", icon: Layers },
   { label: "Tickets", path: "/admin/tickets", icon: Ticket },
+  { label: "SMS Campaigns", path: "/admin/campaigns", icon: MessageSquare },
   { label: "Guests", path: "/admin/guests", icon: Users },
   { label: "Admins", path: "/admin/users", icon: ShieldCheck },
 ];
