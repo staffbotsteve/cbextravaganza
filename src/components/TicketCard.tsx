@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Ticket, Minus, Plus, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import SmsConsent from "@/components/SmsConsent";
 
 const donationPresets = [5, 10, 20];
 
@@ -23,6 +24,8 @@ const TicketCard = () => {
   const [donationAmount, setDonationAmount] = useState<number>(5);
   const [customDonation, setCustomDonation] = useState("");
   const [addDonation, setAddDonation] = useState(true);
+  const [phone, setPhone] = useState("");
+  const [smsOptIn, setSmsOptIn] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -80,6 +83,9 @@ const TicketCard = () => {
           body: {
             items: quantities,
             donationAmount: addDonation ? activeDonation : 0,
+            phone: phone.trim() || null,
+            sms_opt_in: smsOptIn,
+            sms_opt_in_url: window.location.href,
           },
         }
       );
