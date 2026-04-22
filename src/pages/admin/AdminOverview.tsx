@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,7 +14,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-const CURRENT_YEAR = 2025;
+const CURRENT_YEAR = 2026;
 
 const STATUSES = [
   "Prospect",
@@ -35,6 +36,11 @@ type Participation = {
   tent: boolean | null;
   electric: boolean | null;
   volunteers_needed: number | null;
+};
+
+const orgsLink = (params: Record<string, string>) => {
+  const qs = new URLSearchParams(params).toString();
+  return `/admin/organizations${qs ? `?${qs}` : ""}`;
 };
 
 const AdminOverview = () => {
@@ -84,48 +90,56 @@ const AdminOverview = () => {
       value: `$${totalCommitted.toLocaleString()}`,
       icon: DollarSign,
       color: "text-primary",
+      to: orgsLink({ filter: "committed_dollars" }),
     },
     {
       label: "Collected $",
       value: `$${totalPaid.toLocaleString()}`,
       icon: CheckCircle2,
       color: "text-green-600",
+      to: orgsLink({ filter: "collected_dollars" }),
     },
     {
       label: "Forms Outstanding",
       value: formsOutstanding,
       icon: FileText,
       color: "text-amber-600",
+      to: orgsLink({ filter: "forms_outstanding" }),
     },
     {
       label: "Committed Partners",
       value: committed,
       icon: HandHeart,
       color: "text-primary",
+      to: orgsLink({ filter: "committed" }),
     },
     {
       label: "Tents Requested",
       value: tents,
       icon: Tent,
       color: "text-muted-foreground",
+      to: orgsLink({ filter: "tents" }),
     },
     {
       label: "Electric Requested",
       value: electric,
       icon: Zap,
       color: "text-muted-foreground",
+      to: orgsLink({ filter: "electric" }),
     },
     {
       label: "Volunteers Needed",
       value: volunteers,
       icon: Users,
       color: "text-secondary",
+      to: orgsLink({ filter: "volunteers" }),
     },
     {
       label: "Total Records",
       value: rows.length,
       icon: Store,
       color: "text-muted-foreground",
+      to: orgsLink({ filter: "any_participation" }),
     },
   ];
 
@@ -153,29 +167,36 @@ const AdminOverview = () => {
         </h2>
         <p className="font-body text-sm text-muted-foreground">
           Live view of all sponsors, vendors, and partners for the current event year.
+          Click any tile or row to see the underlying records.
         </p>
       </div>
 
       {/* KPI cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s) => (
-          <Card key={s.label}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-body font-semibold text-muted-foreground">
-                {s.label}
-              </CardTitle>
-              <s.icon className={`h-5 w-5 ${s.color}`} />
-            </CardHeader>
-            <CardContent>
-              {isLoading ? (
-                <Skeleton className="h-8 w-24" />
-              ) : (
-                <p className="font-display font-bold text-2xl text-foreground">
-                  {s.value}
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          <Link
+            key={s.label}
+            to={s.to}
+            className="block transition-transform hover:scale-[1.02]"
+          >
+            <Card className="h-full hover:border-primary/50 hover:shadow-md transition-all cursor-pointer">
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-body font-semibold text-muted-foreground">
+                  {s.label}
+                </CardTitle>
+                <s.icon className={`h-5 w-5 ${s.color}`} />
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <Skeleton className="h-8 w-24" />
+                ) : (
+                  <p className="font-display font-bold text-2xl text-foreground">
+                    {s.value}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
@@ -223,21 +244,47 @@ const AdminOverview = () => {
                         className="border-b border-border/50 hover:bg-muted/40"
                       >
                         <td className="py-2 px-3 font-semibold text-foreground">
-                          {status}
-                        </td>
-                        {ROLES.map((r) => (
-                          <td
-                            key={r}
-                            className="text-right py-2 px-3 text-foreground tabular-nums"
+                          <Link
+                            to={orgsLink({ status })}
+                            className="hover:text-primary hover:underline"
                           >
-                            {row[r] ?? 0}
-                          </td>
-                        ))}
+                            {status}
+                          </Link>
+                        </td>
+                        {ROLES.map((r) => {
+                          const count = row[r] ?? 0;
+                          return (
+                            <td
+                              key={r}
+                              className="text-right py-2 px-3 text-foreground tabular-nums"
+                            >
+                              {count > 0 ? (
+                                <Link
+                                  to={orgsLink({ status, role: r })}
+                                  className="hover:text-primary hover:underline"
+                                >
+                                  {count}
+                                </Link>
+                              ) : (
+                                <span className="text-muted-foreground">0</span>
+                              )}
+                            </td>
+                          );
+                        })}
                         <td className="text-right py-2 px-3 text-muted-foreground tabular-nums">
                           {row["Other"] ?? 0}
                         </td>
                         <td className="text-right py-2 px-3 font-semibold text-foreground tabular-nums">
-                          {total}
+                          {total > 0 ? (
+                            <Link
+                              to={orgsLink({ status })}
+                              className="hover:text-primary hover:underline"
+                            >
+                              {total}
+                            </Link>
+                          ) : (
+                            <span className="text-muted-foreground">0</span>
+                          )}
                         </td>
                       </tr>
                     );

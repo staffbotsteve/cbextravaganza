@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +24,7 @@ import {
 import { Search, Building2 } from "lucide-react";
 import OrgDetailDrawer from "@/components/admin/OrgDetailDrawer";
 
-const CURRENT_YEAR = 2025;
+const CURRENT_YEAR = 2026;
 const ROLES = ["Sponsor", "Vendor", "Distributor", "Class Table"] as const;
 const STATUSES = [
   "Prospect",
@@ -47,6 +48,9 @@ type OrgRow = {
     owner_name: string | null;
     sponsor_value: number | null;
     payment_amount: number | null;
+    tent: boolean | null;
+    electric: boolean | null;
+    volunteers_needed: number | null;
     year: number;
   }[];
 };
@@ -65,11 +69,27 @@ const statusColor: Record<string, string> = {
 };
 
 const AdminOrganizations = () => {
+  const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [ownerFilter, setOwnerFilter] = useState<string>("all");
+  const [extraFilter, setExtraFilter] = useState<string>("none");
   const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
+
+  // Hydrate filters from URL on mount / param change
+  useEffect(() => {
+    const role = params.get("role");
+    const status = params.get("status");
+    const filter = params.get("filter");
+    if (role) setRoleFilter(role);
+    if (status) setStatusFilter(status);
+    if (filter) setExtraFilter(filter);
+  }, [params]);
+
+  const clearUrlFilters = () => {
+    if (params.toString()) setParams({});
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-organizations", CURRENT_YEAR],
@@ -77,7 +97,7 @@ const AdminOrganizations = () => {
       const { data, error } = await supabase
         .from("organizations")
         .select(
-          "id, name, type, city, state, participation (role, status, owner_name, sponsor_value, payment_amount, year)"
+          "id, name, type, city, state, participation (role, status, owner_name, sponsor_value, payment_amount, tent, electric, volunteers_needed, year)"
         )
         .order("name");
       if (error) throw error;
@@ -101,9 +121,44 @@ const AdminOrganizations = () => {
       if (roleFilter !== "all" && current?.role !== roleFilter) return false;
       if (statusFilter !== "all" && current?.status !== statusFilter) return false;
       if (ownerFilter !== "all" && current?.owner_name !== ownerFilter) return false;
+
+      switch (extraFilter) {
+        case "tents":
+          if (!current?.tent) return false;
+          break;
+        case "electric":
+          if (!current?.electric) return false;
+          break;
+        case "volunteers":
+          if (!current?.volunteers_needed) return false;
+          break;
+        case "forms_outstanding":
+          if (
+            current?.status !== "Prospect" &&
+            current?.status !== "Contacted" &&
+            current?.status !== "In Discussion"
+          )
+            return false;
+          break;
+        case "committed":
+          if (current?.status !== "Committed" && current?.status !== "Paid")
+            return false;
+          break;
+        case "committed_dollars":
+          if (!Number(current?.sponsor_value ?? 0)) return false;
+          break;
+        case "collected_dollars":
+          if (!Number(current?.payment_amount ?? 0)) return false;
+          break;
+        case "any_participation":
+          if (!current) return false;
+          break;
+      }
       return true;
     });
-  }, [data, search, roleFilter, statusFilter, ownerFilter]);
+  }, [data, search, roleFilter, statusFilter, ownerFilter, extraFilter]);
+
+  const hasUrlFilters = !!params.toString();
 
   return (
     <div className="space-y-4">
@@ -159,11 +214,42 @@ const AdminOrganizations = () => {
               </SelectContent>
             </Select>
           </div>
-          <p className="font-body text-xs text-muted-foreground mt-3">
-            {isLoading
-              ? "Loading…"
-              : `Showing ${filtered.length} of ${data?.length ?? 0} organizations`}
-          </p>
+          <div className="font-body text-xs text-muted-foreground mt-3 flex items-center gap-3 flex-wrap">
+            <span>
+              {isLoading
+                ? "Loading…"
+                : `Showing ${filtered.length} of ${data?.length ?? 0} organizations`}
+            </span>
+            {extraFilter !== "none" && (
+              <Badge variant="secondary" className="gap-2">
+                Filter: {extraFilter.replace(/_/g, " ")}
+                <button
+                  className="hover:text-foreground"
+                  onClick={() => {
+                    setExtraFilter("none");
+                    clearUrlFilters();
+                  }}
+                >
+                  ✕
+                </button>
+              </Badge>
+            )}
+            {hasUrlFilters && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 px-2"
+                onClick={() => {
+                  setRoleFilter("all");
+                  setStatusFilter("all");
+                  setExtraFilter("none");
+                  clearUrlFilters();
+                }}
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 
