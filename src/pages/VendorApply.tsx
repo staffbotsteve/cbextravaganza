@@ -41,6 +41,7 @@ import {
   CheckCircle2,
   Package,
 } from "lucide-react";
+import SmsConsent from "@/components/SmsConsent";
 
 const EVENT_YEAR = 2026;
 
