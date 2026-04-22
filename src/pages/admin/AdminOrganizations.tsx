@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +24,7 @@ import {
 import { Search, Building2 } from "lucide-react";
 import OrgDetailDrawer from "@/components/admin/OrgDetailDrawer";
 
-const CURRENT_YEAR = 2025;
+const CURRENT_YEAR = 2026;
 const ROLES = ["Sponsor", "Vendor", "Distributor", "Class Table"] as const;
 const STATUSES = [
   "Prospect",
