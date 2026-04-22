@@ -37,7 +37,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Mail,
-  Phone,
   Save,
   Trash2,
   MessageSquare,
@@ -45,6 +44,7 @@ import {
   Plus,
 } from "lucide-react";
 import { toast } from "sonner";
+import PhoneNumbersManager from "./PhoneNumbersManager";
 
 interface Props {
   contactId: string | null;
@@ -178,7 +178,6 @@ const ContactDetailDrawer = ({ contactId, open, onOpenChange }: Props) => {
         first_name: form.first_name,
         last_name: form.last_name,
         email: form.email,
-        phone: form.phone,
         cb_connection: form.cb_connection,
         is_primary: form.is_primary ?? false,
         sms_opt_in: form.sms_opt_in ?? true,
@@ -313,14 +312,10 @@ const ContactDetailDrawer = ({ contactId, open, onOpenChange }: Props) => {
                 </div>
 
                 <div>
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={form.phone ?? ""}
-                    onChange={(e) => update("phone", e.target.value)}
-                    placeholder="+15551234567"
-                  />
+                  <Label>Phone numbers</Label>
+                  <div className="mt-2">
+                    <PhoneNumbersManager contactId={contactId!} />
+                  </div>
                 </div>
 
                 <div>

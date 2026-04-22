@@ -19,14 +19,15 @@ import {
 import { Send, Search, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
-type Contact = {
-  id: string;
+type SmsRecipient = {
+  contact_phone_id: string;
+  contact_id: string;
+  phone: string;
+  phone_type: string;
   first_name: string | null;
   last_name: string | null;
-  phone: string | null;
-  sms_opt_in: boolean;
   org_id: string | null;
-  organizations: { id: string; name: string } | null;
+  org_name: string | null;
 };
 
 type Campaign = {
@@ -58,18 +59,45 @@ const AdminCampaigns = () => {
   }, [fromNumber]);
 
   const { data: contacts } = useQuery({
-    queryKey: ["sms-contacts"],
+    queryKey: ["sms-recipients"],
     queryFn: async () => {
+      // Pull all SMS-eligible phones (mobile or unknown, sms_capable)
+      // along with the parent contact + org. We only message contacts
+      // who have opted in.
       const { data, error } = await supabase
-        .from("contacts")
+        .from("contact_phones")
         .select(
-          "id, first_name, last_name, phone, sms_opt_in, org_id, organizations:org_id(id,name)",
+          "id, phone, phone_type, sms_capable, contacts!inner(id, first_name, last_name, sms_opt_in, org_id, organizations:org_id(id, name))",
         )
-        .eq("sms_opt_in", true)
-        .not("phone", "is", null)
-        .order("last_name", { ascending: true });
+        .in("phone_type", ["mobile", "unknown"])
+        .eq("sms_capable", true)
+        .order("phone", { ascending: true });
       if (error) throw error;
-      return (data ?? []) as unknown as Contact[];
+      const rows = (data ?? []) as unknown as Array<{
+        id: string;
+        phone: string;
+        phone_type: string;
+        contacts: {
+          id: string;
+          first_name: string | null;
+          last_name: string | null;
+          sms_opt_in: boolean;
+          org_id: string | null;
+          organizations: { id: string; name: string } | null;
+        };
+      }>;
+      return rows
+        .filter((r) => r.contacts.sms_opt_in)
+        .map<SmsRecipient>((r) => ({
+          contact_phone_id: r.id,
+          contact_id: r.contacts.id,
+          phone: r.phone,
+          phone_type: r.phone_type,
+          first_name: r.contacts.first_name,
+          last_name: r.contacts.last_name,
+          org_id: r.contacts.org_id,
+          org_name: r.contacts.organizations?.name ?? null,
+        }));
     },
   });
 
@@ -95,8 +123,8 @@ const AdminCampaigns = () => {
       const n = [c.first_name, c.last_name].filter(Boolean).join(" ").toLowerCase();
       return (
         n.includes(q) ||
-        (c.phone ?? "").includes(q) ||
-        (c.organizations?.name ?? "").toLowerCase().includes(q)
+        c.phone.includes(q) ||
+        (c.org_name ?? "").toLowerCase().includes(q)
       );
     });
   }, [contacts, search]);
@@ -110,16 +138,16 @@ const AdminCampaigns = () => {
 
   const toggleAll = () => {
     if (selected.size === filtered.length) setSelected(new Set());
-    else setSelected(new Set(filtered.map((c) => c.id)));
+    else setSelected(new Set(filtered.map((c) => c.contact_phone_id)));
   };
 
   const preview = useMemo(() => {
-    const first = filtered.find((c) => selected.has(c.id));
+    const first = filtered.find((c) => selected.has(c.contact_phone_id));
     if (!first) return body;
     return body
       .replace(/\{\{\s*first_name\s*\}\}/gi, first.first_name ?? "")
       .replace(/\{\{\s*last_name\s*\}\}/gi, first.last_name ?? "")
-      .replace(/\{\{\s*org_name\s*\}\}/gi, first.organizations?.name ?? "");
+      .replace(/\{\{\s*org_name\s*\}\}/gi, first.org_name ?? "");
   }, [body, filtered, selected]);
 
   const handleSend = async () => {
@@ -145,14 +173,15 @@ const AdminCampaigns = () => {
     setSending(true);
     try {
       const recipients = (contacts ?? [])
-        .filter((c) => selected.has(c.id) && c.phone)
+        .filter((c) => selected.has(c.contact_phone_id))
         .map((c) => ({
-          contact_id: c.id,
+          contact_id: c.contact_id,
+          contact_phone_id: c.contact_phone_id,
           org_id: c.org_id,
-          phone: c.phone!,
+          phone: c.phone,
           first_name: c.first_name,
           last_name: c.last_name,
-          org_name: c.organizations?.name ?? null,
+          org_name: c.org_name,
         }));
 
       const { data, error } = await supabase.functions.invoke(
@@ -279,15 +308,16 @@ const AdminCampaigns = () => {
                   <TableHead>Name</TableHead>
                   <TableHead>Organization</TableHead>
                   <TableHead>Phone</TableHead>
+                  <TableHead>Type</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.map((c) => (
-                  <TableRow key={c.id}>
+                  <TableRow key={c.contact_phone_id}>
                     <TableCell>
                       <Checkbox
-                        checked={selected.has(c.id)}
-                        onCheckedChange={() => toggle(c.id)}
+                        checked={selected.has(c.contact_phone_id)}
+                        onCheckedChange={() => toggle(c.contact_phone_id)}
                       />
                     </TableCell>
                     <TableCell className="font-semibold">
@@ -295,18 +325,26 @@ const AdminCampaigns = () => {
                         "(no name)"}
                     </TableCell>
                     <TableCell className="text-muted-foreground text-sm">
-                      {c.organizations?.name ?? "—"}
+                      {c.org_name ?? "—"}
                     </TableCell>
                     <TableCell className="text-sm">{c.phone}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={c.phone_type === "mobile" ? "default" : "outline"}
+                        className="text-xs capitalize"
+                      >
+                        {c.phone_type}
+                      </Badge>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {filtered.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={4}
+                      colSpan={5}
                       className="text-center text-muted-foreground py-6"
                     >
-                      No opted-in contacts with phone numbers.
+                      No opted-in mobile/unknown numbers found.
                     </TableCell>
                   </TableRow>
                 )}

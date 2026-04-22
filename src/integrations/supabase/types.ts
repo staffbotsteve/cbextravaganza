@@ -72,6 +72,7 @@ export type Database = {
         Row: {
           campaign_id: string
           contact_id: string | null
+          contact_phone_id: string | null
           created_at: string
           delivered_at: string | null
           error: string | null
@@ -89,6 +90,7 @@ export type Database = {
         Insert: {
           campaign_id: string
           contact_id?: string | null
+          contact_phone_id?: string | null
           created_at?: string
           delivered_at?: string | null
           error?: string | null
@@ -106,6 +108,7 @@ export type Database = {
         Update: {
           campaign_id?: string
           contact_id?: string | null
+          contact_phone_id?: string | null
           created_at?: string
           delivered_at?: string | null
           error?: string | null
@@ -133,6 +136,13 @@ export type Database = {
             columns: ["contact_id"]
             isOneToOne: false
             referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_recipients_contact_phone_id_fkey"
+            columns: ["contact_phone_id"]
+            isOneToOne: false
+            referencedRelation: "contact_phones"
             referencedColumns: ["id"]
           },
           {
@@ -194,6 +204,59 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      contact_phones: {
+        Row: {
+          contact_id: string
+          created_at: string
+          id: string
+          is_primary: boolean
+          last_checked_at: string | null
+          last_sms_error_code: string | null
+          last_sms_status: string | null
+          notes: string | null
+          phone: string
+          phone_type: Database["public"]["Enums"]["phone_type"]
+          sms_capable: boolean
+          updated_at: string
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          last_checked_at?: string | null
+          last_sms_error_code?: string | null
+          last_sms_status?: string | null
+          notes?: string | null
+          phone: string
+          phone_type?: Database["public"]["Enums"]["phone_type"]
+          sms_capable?: boolean
+          updated_at?: string
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          last_checked_at?: string | null
+          last_sms_error_code?: string | null
+          last_sms_status?: string | null
+          notes?: string | null
+          phone?: string
+          phone_type?: Database["public"]["Enums"]["phone_type"]
+          sms_capable?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_phones_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contacts: {
         Row: {
@@ -859,6 +922,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      phone_type: "mobile" | "office" | "home" | "fax" | "other" | "unknown"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -987,6 +1051,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      phone_type: ["mobile", "office", "home", "fax", "other", "unknown"],
     },
   },
 } as const
