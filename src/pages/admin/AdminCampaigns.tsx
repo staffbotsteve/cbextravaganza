@@ -19,14 +19,15 @@ import {
 import { Send, Search, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
-type Contact = {
-  id: string;
+type SmsRecipient = {
+  contact_phone_id: string;
+  contact_id: string;
+  phone: string;
+  phone_type: string;
   first_name: string | null;
   last_name: string | null;
-  phone: string | null;
-  sms_opt_in: boolean;
   org_id: string | null;
-  organizations: { id: string; name: string } | null;
+  org_name: string | null;
 };
 
 type Campaign = {
@@ -58,18 +59,45 @@ const AdminCampaigns = () => {
   }, [fromNumber]);
 
   const { data: contacts } = useQuery({
-    queryKey: ["sms-contacts"],
+    queryKey: ["sms-recipients"],
     queryFn: async () => {
+      // Pull all SMS-eligible phones (mobile or unknown, sms_capable)
+      // along with the parent contact + org. We only message contacts
+      // who have opted in.
       const { data, error } = await supabase
-        .from("contacts")
+        .from("contact_phones")
         .select(
-          "id, first_name, last_name, phone, sms_opt_in, org_id, organizations:org_id(id,name)",
+          "id, phone, phone_type, sms_capable, contacts!inner(id, first_name, last_name, sms_opt_in, org_id, organizations:org_id(id, name))",
         )
-        .eq("sms_opt_in", true)
-        .not("phone", "is", null)
-        .order("last_name", { ascending: true });
+        .in("phone_type", ["mobile", "unknown"])
+        .eq("sms_capable", true)
+        .order("phone", { ascending: true });
       if (error) throw error;
-      return (data ?? []) as unknown as Contact[];
+      const rows = (data ?? []) as unknown as Array<{
+        id: string;
+        phone: string;
+        phone_type: string;
+        contacts: {
+          id: string;
+          first_name: string | null;
+          last_name: string | null;
+          sms_opt_in: boolean;
+          org_id: string | null;
+          organizations: { id: string; name: string } | null;
+        };
+      }>;
+      return rows
+        .filter((r) => r.contacts.sms_opt_in)
+        .map<SmsRecipient>((r) => ({
+          contact_phone_id: r.id,
+          contact_id: r.contacts.id,
+          phone: r.phone,
+          phone_type: r.phone_type,
+          first_name: r.contacts.first_name,
+          last_name: r.contacts.last_name,
+          org_id: r.contacts.org_id,
+          org_name: r.contacts.organizations?.name ?? null,
+        }));
     },
   });
 
