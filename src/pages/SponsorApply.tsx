@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Mail, Phone, Building2, CheckCircle2, AlertCircle } from "lucide-react";
+import SmsConsent from "@/components/SmsConsent";
 
 const sponsorSchema = z.object({
   company_name: z.string().trim().min(1, "Sponsor name is required").max(200),
@@ -35,6 +36,7 @@ const sponsorSchema = z.object({
   sponsorship_level_id: z.string().min(1, "Please select a sponsorship level"),
   preferred_venue: z.string().trim().max(200).optional().or(z.literal("")),
   notes: z.string().trim().max(2000).optional().or(z.literal("")),
+  sms_opt_in: z.boolean().default(true),
 });
 
 type SponsorFormData = z.infer<typeof sponsorSchema>;
@@ -71,6 +73,7 @@ const SponsorApply = () => {
       sponsorship_level_id: "",
       preferred_venue: "",
       notes: "",
+      sms_opt_in: true,
     },
   });
 
@@ -80,7 +83,10 @@ const SponsorApply = () => {
     setSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-sponsor-checkout", {
-        body: values,
+        body: {
+          ...values,
+          sms_opt_in_url: window.location.href,
+        },
       });
 
       if (error) throw error;
