@@ -27,6 +27,7 @@ import AdminGuests from "./pages/admin/AdminGuests";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminSponsorshipLevels from "./pages/admin/AdminSponsorshipLevels";
 import AdminTickets from "./pages/admin/AdminTickets";
+import AdminCampaigns from "./pages/admin/AdminCampaigns";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const App = () => (
               <Route path="users" element={<AdminUsers />} />
               <Route path="sponsorship-levels" element={<AdminSponsorshipLevels />} />
               <Route path="tickets" element={<AdminTickets />} />
+              <Route path="campaigns" element={<AdminCampaigns />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
