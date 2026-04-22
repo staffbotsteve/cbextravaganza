@@ -29,11 +29,19 @@ serve(async (req) => {
       zip,
       preferred_venue,
       notes,
+      sms_opt_in,
+      sms_opt_in_url,
     } = await req.json();
 
     if (!sponsorship_level_id || !company_name || !contact_name || !email) {
       throw new Error("Missing required fields");
     }
+
+    const clientIp =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("cf-connecting-ip") ||
+      null;
+    const optedIn = sms_opt_in !== false; // default true
 
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -146,6 +154,11 @@ serve(async (req) => {
       email,
       phone: phone || null,
       is_primary: true,
+      sms_opt_in: optedIn,
+      sms_opt_in_at: optedIn ? new Date().toISOString() : null,
+      sms_opt_in_source: optedIn ? "sponsor_application" : null,
+      sms_opt_in_url: optedIn ? (sms_opt_in_url || null) : null,
+      sms_opt_in_ip: optedIn ? clientIp : null,
     };
 
     if (existingContact?.id) {
