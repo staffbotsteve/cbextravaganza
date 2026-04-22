@@ -10,6 +10,7 @@ const GATEWAY_URL = "https://connector-gateway.lovable.dev/twilio";
 
 interface RecipientInput {
   contact_id?: string | null;
+  contact_phone_id?: string | null;
   org_id?: string | null;
   phone: string;
   first_name?: string | null;
@@ -115,6 +116,7 @@ Deno.serve(async (req) => {
         .insert({
           campaign_id: campaign.id,
           contact_id: r.contact_id ?? null,
+          contact_phone_id: r.contact_phone_id ?? null,
           org_id: r.org_id ?? null,
           phone: to ?? r.phone,
           rendered_body: renderedBody,
@@ -133,6 +135,7 @@ Deno.serve(async (req) => {
       }
 
       try {
+        const statusCallback = `${SUPABASE_URL}/functions/v1/twilio-status-callback`;
         const resp = await fetch(`${GATEWAY_URL}/Messages.json`, {
           method: "POST",
           headers: {
@@ -144,6 +147,7 @@ Deno.serve(async (req) => {
             To: to,
             From: payload.from,
             Body: renderedBody,
+            StatusCallback: statusCallback,
           }),
         });
         const data = await resp.json();
