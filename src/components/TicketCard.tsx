@@ -266,6 +266,17 @@ const TicketCard = () => {
             </div>
           </div>
 
+          <div className="space-y-2 pt-1">
+            <input
+              type="tel"
+              placeholder="Mobile phone (for confirmations)"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full rounded-lg border border-border bg-muted/50 px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <SmsConsent compact checked={smsOptIn} onChange={setSmsOptIn} id="ticket-sms-opt-in" />
+          </div>
+
           <Button
             onClick={handleCheckout}
             disabled={loading}
