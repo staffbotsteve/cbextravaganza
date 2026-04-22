@@ -14,6 +14,8 @@ import SponsorApply from "./pages/SponsorApply";
 import GetInvolved from "./pages/GetInvolved";
 import VendorApply from "./pages/VendorApply";
 import Contact from "./pages/Contact";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import AdminLogin from "./pages/AdminLogin";
 import AdminLayout from "./components/AdminLayout";
 import AdminOverview from "./pages/admin/AdminOverview";
@@ -47,6 +49,8 @@ const App = () => (
             <Route path="/sponsors/apply" element={<SponsorApply />} />
             <Route path="/get-involved" element={<GetInvolved />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminOverview />} />
