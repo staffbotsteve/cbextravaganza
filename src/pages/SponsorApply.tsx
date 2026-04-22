@@ -398,6 +398,18 @@ const SponsorApply = () => {
                 </div>
               </div>
 
+              <FormField
+                control={form.control}
+                name="sms_opt_in"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SmsConsent checked={field.value} onChange={field.onChange} id="sponsor-sms-opt-in" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
               {/* Deadline reminder */}
               <p className="font-body text-xs text-muted-foreground text-center">
                 To ensure inclusion in printed materials, please respond by <strong className="text-foreground">July 31, 2025</strong>.
