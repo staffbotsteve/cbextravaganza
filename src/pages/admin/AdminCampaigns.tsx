@@ -308,15 +308,16 @@ const AdminCampaigns = () => {
                   <TableHead>Name</TableHead>
                   <TableHead>Organization</TableHead>
                   <TableHead>Phone</TableHead>
+                  <TableHead>Type</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filtered.map((c) => (
-                  <TableRow key={c.id}>
+                  <TableRow key={c.contact_phone_id}>
                     <TableCell>
                       <Checkbox
-                        checked={selected.has(c.id)}
-                        onCheckedChange={() => toggle(c.id)}
+                        checked={selected.has(c.contact_phone_id)}
+                        onCheckedChange={() => toggle(c.contact_phone_id)}
                       />
                     </TableCell>
                     <TableCell className="font-semibold">
@@ -324,18 +325,26 @@ const AdminCampaigns = () => {
                         "(no name)"}
                     </TableCell>
                     <TableCell className="text-muted-foreground text-sm">
-                      {c.organizations?.name ?? "—"}
+                      {c.org_name ?? "—"}
                     </TableCell>
                     <TableCell className="text-sm">{c.phone}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={c.phone_type === "mobile" ? "default" : "outline"}
+                        className="text-xs capitalize"
+                      >
+                        {c.phone_type}
+                      </Badge>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {filtered.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={4}
+                      colSpan={5}
                       className="text-center text-muted-foreground py-6"
                     >
-                      No opted-in contacts with phone numbers.
+                      No opted-in mobile/unknown numbers found.
                     </TableCell>
                   </TableRow>
                 )}
