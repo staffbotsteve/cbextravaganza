@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Ticket, Minus, Plus, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import SmsConsent from "@/components/SmsConsent";
 
 const donationPresets = [5, 10, 20];
 
@@ -23,6 +24,8 @@ const TicketCard = () => {
   const [donationAmount, setDonationAmount] = useState<number>(5);
   const [customDonation, setCustomDonation] = useState("");
   const [addDonation, setAddDonation] = useState(true);
+  const [phone, setPhone] = useState("");
+  const [smsOptIn, setSmsOptIn] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -80,6 +83,9 @@ const TicketCard = () => {
           body: {
             items: quantities,
             donationAmount: addDonation ? activeDonation : 0,
+            phone: phone.trim() || null,
+            sms_opt_in: smsOptIn,
+            sms_opt_in_url: window.location.href,
           },
         }
       );
@@ -258,6 +264,17 @@ const TicketCard = () => {
               <span>Total</span>
               <span>${total + (addDonation ? activeDonation : 0)}</span>
             </div>
+          </div>
+
+          <div className="space-y-2 pt-1">
+            <input
+              type="tel"
+              placeholder="Mobile phone (for confirmations)"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full rounded-lg border border-border bg-muted/50 px-3 py-2 font-body text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            <SmsConsent compact checked={smsOptIn} onChange={setSmsOptIn} id="ticket-sms-opt-in" />
           </div>
 
           <Button

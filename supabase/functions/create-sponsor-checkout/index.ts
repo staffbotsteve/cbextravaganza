@@ -29,19 +29,19 @@ serve(async (req) => {
       zip,
       preferred_venue,
       notes,
-      signature_name,
-      signature_title,
-      agree_terms,
-      signed_at,
-      signed_user_agent,
+      sms_opt_in,
+      sms_opt_in_url,
     } = await req.json();
 
     if (!sponsorship_level_id || !company_name || !contact_name || !email) {
       throw new Error("Missing required fields");
     }
-    if (!signature_name || !agree_terms) {
-      throw new Error("Signature and agreement are required");
-    }
+
+    const clientIp =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("cf-connecting-ip") ||
+      null;
+    const optedIn = sms_opt_in !== false; // default true
 
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -154,6 +154,11 @@ serve(async (req) => {
       email,
       phone: phone || null,
       is_primary: true,
+      sms_opt_in: optedIn,
+      sms_opt_in_at: optedIn ? new Date().toISOString() : null,
+      sms_opt_in_source: optedIn ? "sponsor_application" : null,
+      sms_opt_in_url: optedIn ? (sms_opt_in_url || null) : null,
+      sms_opt_in_ip: optedIn ? clientIp : null,
     };
 
     if (existingContact?.id) {
@@ -199,36 +204,7 @@ serve(async (req) => {
       if (pErr) console.error("Participation insert error:", pErr);
     }
 
-    // 4) Record e-signature as a document + activity
-    const signedAtIso = signed_at || new Date().toISOString();
-    const signatureBlock = [
-      `Sponsor: ${company_name}`,
-      `Level: ${level.name} ($${Number(level.amount).toLocaleString()})`,
-      `Signed by: ${signature_name}${signature_title ? ` (${signature_title})` : ""}`,
-      `Email: ${email}`,
-      `Signed at: ${signedAtIso}`,
-      `User agent: ${signed_user_agent || "n/a"}`,
-      `Agreement: 37th Annual CB Extravaganza Sponsorship Agreement (${EVENT_YEAR})`,
-    ].join("\n");
-
-    await supabaseAdmin.from("documents").insert({
-      org_id: orgId,
-      year: EVENT_YEAR,
-      type: "Sponsorship Agreement",
-      status: "Signed",
-      sent_at: signedAtIso,
-      signed_at: signedAtIso,
-    });
-
-    await supabaseAdmin.from("activities").insert({
-      org_id: orgId,
-      type: "esignature",
-      subject: `Sponsorship agreement signed by ${signature_name}`,
-      body: signatureBlock,
-      direction: "inbound",
-    });
-
-    // 5) Optional notes -> activity
+    // 4) Optional notes -> activity
     if (notes && String(notes).trim()) {
       await supabaseAdmin.from("activities").insert({
         org_id: orgId,

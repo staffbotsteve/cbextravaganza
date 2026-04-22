@@ -79,6 +79,11 @@ export type Database = {
           last_name: string | null
           org_id: string | null
           phone: string | null
+          sms_opt_in: boolean
+          sms_opt_in_at: string | null
+          sms_opt_in_ip: string | null
+          sms_opt_in_source: string | null
+          sms_opt_in_url: string | null
         }
         Insert: {
           cb_connection?: string | null
@@ -90,6 +95,11 @@ export type Database = {
           last_name?: string | null
           org_id?: string | null
           phone?: string | null
+          sms_opt_in?: boolean
+          sms_opt_in_at?: string | null
+          sms_opt_in_ip?: string | null
+          sms_opt_in_source?: string | null
+          sms_opt_in_url?: string | null
         }
         Update: {
           cb_connection?: string | null
@@ -101,6 +111,11 @@ export type Database = {
           last_name?: string | null
           org_id?: string | null
           phone?: string | null
+          sms_opt_in?: boolean
+          sms_opt_in_at?: string | null
+          sms_opt_in_ip?: string | null
+          sms_opt_in_source?: string | null
+          sms_opt_in_url?: string | null
         }
         Relationships: [
           {
@@ -491,6 +506,10 @@ export type Database = {
           id: string
           parking_qty: number
           payment_status: string
+          phone: string | null
+          sms_opt_in: boolean
+          sms_opt_in_at: string | null
+          sms_opt_in_source: string | null
           stripe_session_id: string | null
           total_cents: number
           updated_at: string
@@ -504,6 +523,10 @@ export type Database = {
           id?: string
           parking_qty?: number
           payment_status?: string
+          phone?: string | null
+          sms_opt_in?: boolean
+          sms_opt_in_at?: string | null
+          sms_opt_in_source?: string | null
           stripe_session_id?: string | null
           total_cents?: number
           updated_at?: string
@@ -517,6 +540,10 @@ export type Database = {
           id?: string
           parking_qty?: number
           payment_status?: string
+          phone?: string | null
+          sms_opt_in?: boolean
+          sms_opt_in_at?: string | null
+          sms_opt_in_source?: string | null
           stripe_session_id?: string | null
           total_cents?: number
           updated_at?: string

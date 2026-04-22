@@ -41,6 +41,7 @@ import {
   CheckCircle2,
   Package,
 } from "lucide-react";
+import SmsConsent from "@/components/SmsConsent";
 
 const EVENT_YEAR = 2026;
 
@@ -69,6 +70,7 @@ const vendorSchema = z.object({
   needs_electricity: z.boolean().default(false),
   needs_tent: z.boolean().default(false),
   notes: z.string().trim().max(2000).optional().or(z.literal("")),
+  sms_opt_in: z.boolean().default(true),
 });
 
 type VendorFormData = z.infer<typeof vendorSchema>;
@@ -110,6 +112,7 @@ const VendorApply = () => {
       needs_electricity: false,
       needs_tent: false,
       notes: "",
+      sms_opt_in: true,
     },
   });
 
@@ -182,6 +185,10 @@ const VendorApply = () => {
         email: values.email,
         phone: values.phone,
         is_primary: true,
+        sms_opt_in: values.sms_opt_in,
+        sms_opt_in_at: values.sms_opt_in ? new Date().toISOString() : null,
+        sms_opt_in_source: values.sms_opt_in ? "vendor_application" : null,
+        sms_opt_in_url: values.sms_opt_in ? window.location.href : null,
       };
 
       if (existingContact?.id) {
@@ -679,6 +686,18 @@ const VendorApply = () => {
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="sms_opt_in"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SmsConsent checked={field.value} onChange={field.onChange} id="vendor-sms-opt-in" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
               <Button type="submit" disabled={submitting} className="w-full rounded-full font-body font-bold h-12 text-base">
                 {submitting ? "Submitting…" : "Submit Vendor Application"}
