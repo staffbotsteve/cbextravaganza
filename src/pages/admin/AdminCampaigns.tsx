@@ -123,8 +123,8 @@ const AdminCampaigns = () => {
       const n = [c.first_name, c.last_name].filter(Boolean).join(" ").toLowerCase();
       return (
         n.includes(q) ||
-        (c.phone ?? "").includes(q) ||
-        (c.organizations?.name ?? "").toLowerCase().includes(q)
+        c.phone.includes(q) ||
+        (c.org_name ?? "").toLowerCase().includes(q)
       );
     });
   }, [contacts, search]);
@@ -138,16 +138,16 @@ const AdminCampaigns = () => {
 
   const toggleAll = () => {
     if (selected.size === filtered.length) setSelected(new Set());
-    else setSelected(new Set(filtered.map((c) => c.id)));
+    else setSelected(new Set(filtered.map((c) => c.contact_phone_id)));
   };
 
   const preview = useMemo(() => {
-    const first = filtered.find((c) => selected.has(c.id));
+    const first = filtered.find((c) => selected.has(c.contact_phone_id));
     if (!first) return body;
     return body
       .replace(/\{\{\s*first_name\s*\}\}/gi, first.first_name ?? "")
       .replace(/\{\{\s*last_name\s*\}\}/gi, first.last_name ?? "")
-      .replace(/\{\{\s*org_name\s*\}\}/gi, first.organizations?.name ?? "");
+      .replace(/\{\{\s*org_name\s*\}\}/gi, first.org_name ?? "");
   }, [body, filtered, selected]);
 
   const handleSend = async () => {
@@ -173,14 +173,15 @@ const AdminCampaigns = () => {
     setSending(true);
     try {
       const recipients = (contacts ?? [])
-        .filter((c) => selected.has(c.id) && c.phone)
+        .filter((c) => selected.has(c.contact_phone_id))
         .map((c) => ({
-          contact_id: c.id,
+          contact_id: c.contact_id,
+          contact_phone_id: c.contact_phone_id,
           org_id: c.org_id,
-          phone: c.phone!,
+          phone: c.phone,
           first_name: c.first_name,
           last_name: c.last_name,
-          org_name: c.organizations?.name ?? null,
+          org_name: c.org_name,
         }));
 
       const { data, error } = await supabase.functions.invoke(
