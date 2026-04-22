@@ -214,11 +214,42 @@ const AdminOrganizations = () => {
               </SelectContent>
             </Select>
           </div>
-          <p className="font-body text-xs text-muted-foreground mt-3">
-            {isLoading
-              ? "Loading…"
-              : `Showing ${filtered.length} of ${data?.length ?? 0} organizations`}
-          </p>
+          <div className="font-body text-xs text-muted-foreground mt-3 flex items-center gap-3 flex-wrap">
+            <span>
+              {isLoading
+                ? "Loading…"
+                : `Showing ${filtered.length} of ${data?.length ?? 0} organizations`}
+            </span>
+            {extraFilter !== "none" && (
+              <Badge variant="secondary" className="gap-2">
+                Filter: {extraFilter.replace(/_/g, " ")}
+                <button
+                  className="hover:text-foreground"
+                  onClick={() => {
+                    setExtraFilter("none");
+                    clearUrlFilters();
+                  }}
+                >
+                  ✕
+                </button>
+              </Badge>
+            )}
+            {hasUrlFilters && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 px-2"
+                onClick={() => {
+                  setRoleFilter("all");
+                  setStatusFilter("all");
+                  setExtraFilter("none");
+                  clearUrlFilters();
+                }}
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 
