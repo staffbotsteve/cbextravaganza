@@ -687,6 +687,18 @@ const VendorApply = () => {
                 />
               </div>
 
+              <FormField
+                control={form.control}
+                name="sms_opt_in"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SmsConsent checked={field.value} onChange={field.onChange} id="vendor-sms-opt-in" />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
               <Button type="submit" disabled={submitting} className="w-full rounded-full font-body font-bold h-12 text-base">
                 {submitting ? "Submitting…" : "Submit Vendor Application"}
               </Button>
