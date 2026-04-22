@@ -48,6 +48,9 @@ type OrgRow = {
     owner_name: string | null;
     sponsor_value: number | null;
     payment_amount: number | null;
+    tent: boolean | null;
+    electric: boolean | null;
+    volunteers_needed: number | null;
     year: number;
   }[];
 };
@@ -66,11 +69,27 @@ const statusColor: Record<string, string> = {
 };
 
 const AdminOrganizations = () => {
+  const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [ownerFilter, setOwnerFilter] = useState<string>("all");
+  const [extraFilter, setExtraFilter] = useState<string>("none");
   const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
+
+  // Hydrate filters from URL on mount / param change
+  useEffect(() => {
+    const role = params.get("role");
+    const status = params.get("status");
+    const filter = params.get("filter");
+    if (role) setRoleFilter(role);
+    if (status) setStatusFilter(status);
+    if (filter) setExtraFilter(filter);
+  }, [params]);
+
+  const clearUrlFilters = () => {
+    if (params.toString()) setParams({});
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-organizations", CURRENT_YEAR],
@@ -78,7 +97,7 @@ const AdminOrganizations = () => {
       const { data, error } = await supabase
         .from("organizations")
         .select(
-          "id, name, type, city, state, participation (role, status, owner_name, sponsor_value, payment_amount, year)"
+          "id, name, type, city, state, participation (role, status, owner_name, sponsor_value, payment_amount, tent, electric, volunteers_needed, year)"
         )
         .order("name");
       if (error) throw error;
