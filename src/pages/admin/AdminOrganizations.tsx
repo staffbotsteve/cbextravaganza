@@ -121,9 +121,44 @@ const AdminOrganizations = () => {
       if (roleFilter !== "all" && current?.role !== roleFilter) return false;
       if (statusFilter !== "all" && current?.status !== statusFilter) return false;
       if (ownerFilter !== "all" && current?.owner_name !== ownerFilter) return false;
+
+      switch (extraFilter) {
+        case "tents":
+          if (!current?.tent) return false;
+          break;
+        case "electric":
+          if (!current?.electric) return false;
+          break;
+        case "volunteers":
+          if (!current?.volunteers_needed) return false;
+          break;
+        case "forms_outstanding":
+          if (
+            current?.status !== "Prospect" &&
+            current?.status !== "Contacted" &&
+            current?.status !== "In Discussion"
+          )
+            return false;
+          break;
+        case "committed":
+          if (current?.status !== "Committed" && current?.status !== "Paid")
+            return false;
+          break;
+        case "committed_dollars":
+          if (!Number(current?.sponsor_value ?? 0)) return false;
+          break;
+        case "collected_dollars":
+          if (!Number(current?.payment_amount ?? 0)) return false;
+          break;
+        case "any_participation":
+          if (!current) return false;
+          break;
+      }
       return true;
     });
-  }, [data, search, roleFilter, statusFilter, ownerFilter]);
+  }, [data, search, roleFilter, statusFilter, ownerFilter, extraFilter]);
+
+  const hasUrlFilters = !!params.toString();
 
   return (
     <div className="space-y-4">
