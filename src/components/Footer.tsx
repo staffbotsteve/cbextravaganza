@@ -40,10 +40,18 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-secondary-foreground/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="border-t border-secondary-foreground/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="font-body text-secondary-foreground/40 text-xs">
             © {new Date().getFullYear()} Christian Brothers High School. All rights reserved.
           </p>
+          <div className="flex items-center gap-4 font-body text-xs">
+            <Link to="/privacy" className="text-secondary-foreground/60 hover:text-primary transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="text-secondary-foreground/60 hover:text-primary transition-colors">
+              Terms &amp; Conditions
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
