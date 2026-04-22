@@ -68,6 +68,133 @@ export type Database = {
           },
         ]
       }
+      campaign_recipients: {
+        Row: {
+          campaign_id: string
+          contact_id: string | null
+          created_at: string
+          delivered_at: string | null
+          error: string | null
+          id: string
+          org_id: string | null
+          phone: string
+          rendered_body: string
+          replied_at: string | null
+          reply_body: string | null
+          sent_at: string | null
+          status: string
+          twilio_sid: string | null
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          contact_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          error?: string | null
+          id?: string
+          org_id?: string | null
+          phone: string
+          rendered_body: string
+          replied_at?: string | null
+          reply_body?: string | null
+          sent_at?: string | null
+          status?: string
+          twilio_sid?: string | null
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          contact_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          error?: string | null
+          id?: string
+          org_id?: string | null
+          phone?: string
+          rendered_body?: string
+          replied_at?: string | null
+          reply_body?: string | null
+          sent_at?: string | null
+          status?: string
+          twilio_sid?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_recipients_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_recipients_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_recipients_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaigns: {
+        Row: {
+          body: string
+          channel: string
+          created_at: string
+          created_by: string | null
+          delivered_count: number
+          failed_count: number
+          id: string
+          name: string
+          replied_count: number
+          sent_at: string | null
+          sent_count: number
+          status: string
+          total_recipients: number
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          channel?: string
+          created_at?: string
+          created_by?: string | null
+          delivered_count?: number
+          failed_count?: number
+          id?: string
+          name: string
+          replied_count?: number
+          sent_at?: string | null
+          sent_count?: number
+          status?: string
+          total_recipients?: number
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          channel?: string
+          created_at?: string
+          created_by?: string | null
+          delivered_count?: number
+          failed_count?: number
+          id?: string
+          name?: string
+          replied_count?: number
+          sent_at?: string | null
+          sent_count?: number
+          status?: string
+          total_recipients?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
           cb_connection: string | null
@@ -164,6 +291,79 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "documents_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          body: string | null
+          campaign_id: string | null
+          channel: string
+          contact_id: string | null
+          created_at: string
+          direction: string
+          error: string | null
+          external_id: string | null
+          from_address: string | null
+          id: string
+          occurred_at: string
+          org_id: string | null
+          status: string | null
+          to_address: string | null
+        }
+        Insert: {
+          body?: string | null
+          campaign_id?: string | null
+          channel?: string
+          contact_id?: string | null
+          created_at?: string
+          direction: string
+          error?: string | null
+          external_id?: string | null
+          from_address?: string | null
+          id?: string
+          occurred_at?: string
+          org_id?: string | null
+          status?: string | null
+          to_address?: string | null
+        }
+        Update: {
+          body?: string | null
+          campaign_id?: string | null
+          channel?: string
+          contact_id?: string | null
+          created_at?: string
+          direction?: string
+          error?: string | null
+          external_id?: string | null
+          from_address?: string | null
+          id?: string
+          occurred_at?: string
+          org_id?: string | null
+          status?: string | null
+          to_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
